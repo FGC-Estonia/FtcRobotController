@@ -63,9 +63,9 @@ public class Erection {
 
    */
 
-    public void raise(double rightStick, boolean bottom, boolean height80, boolean height100, boolean height120) {
+    public void raise(boolean disable, double rightStick, boolean bottom, boolean height80, boolean height100, boolean height120) {
 
-        if (!isInitError) {
+        if (!isInitError && !disable) {
             try {
                 if (bottom) {
                     runToHeight(1500);

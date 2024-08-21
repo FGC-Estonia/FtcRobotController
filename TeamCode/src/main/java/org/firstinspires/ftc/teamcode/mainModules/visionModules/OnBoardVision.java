@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.mainModules;
+package org.firstinspires.ftc.teamcode.mainModules.visionModules;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 

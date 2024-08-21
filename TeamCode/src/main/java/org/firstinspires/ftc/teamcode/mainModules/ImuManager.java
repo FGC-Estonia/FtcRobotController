@@ -43,6 +43,11 @@ public class ImuManager {
         this.telemetry = telemetry;
         initImu();
     }
+
+    public IMU get(){
+        return imu;
+    }
+
     public double getYawRadians(){
         if (imuInitError) {
             initImu();

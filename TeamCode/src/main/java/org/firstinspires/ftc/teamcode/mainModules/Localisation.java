@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.mainModules.visionModules.OnBoardVision;
 import org.firstinspires.ftc.teamcode.maps.AprilTag;
 import org.firstinspires.ftc.teamcode.maps.AprilTagMapping;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.opencv.core.Mat;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class Localisation {
     private OnBoardVision onBoardVision;
     private ExternalVision externalVision;
 
-    private Map<Integer, AprilTag> aprilTags = AprilTagMapping.getMap();
+    //private Map<Integer, AprilTag> aprilTags = AprilTagMapping.getMap();
     private List<AprilTagDetection> aprilTagDetections = null;
 
     private HardwareMap hardwareMap;
@@ -35,6 +36,8 @@ public class Localisation {
     public void initVision(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
         hardwareMap = hardwareMapPorted;
         telemetry = telemetryPorted;
+
+        aprilTagMapping  = new AprilTagMapping();
 
         onBoardVision = new OnBoardVision();
         try {
@@ -88,6 +91,10 @@ public class Localisation {
                     poseX = detection.ftcPose.x;
                     poseY = detection.ftcPose.y;
                     poseZ = detection.ftcPose.z;
+                    telemetry.addLine("tag data");
+                    telemetry.addData("Pose X", poseX);
+                    telemetry.addData("Pose Y", poseY);
+                    telemetry.addData("Pose Z", poseZ);
 
 
 
@@ -99,6 +106,7 @@ public class Localisation {
             }
 
         } catch (Exception e) {
+            telemetry.addData("error", e.toString());
             telemetry.addData("VisionError", true);
 
         }
@@ -109,33 +117,98 @@ public class Localisation {
     }
     private double[] calculateRobotPosition(AprilTagDetection detection, double potentiometer) throws Exception{
 
-            int[] tagPosition = aprilTagMapping.getTagLocation(detection.id);
+            // Get the tag's position from the map based on its ID
+            telemetry.addData("ID", detection.id);
+            //telemetry.addLine();
+
+            double[] tagPosition = aprilTagMapping.getTagLocation(detection.id);
+        telemetry.addData("2", true);
+            telemetry.addData("Tag Position (X, Y, Z, Yaw)",
+                String.format("%.2f, %.2f, %.2f, %.2f", tagPosition[0], tagPosition[1], tagPosition[2], tagPosition[3]));
 
 
-            double[] cameraPosition = relativeToCamera(tagPosition[0], tagPosition[1], tagPosition[2], detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z);
+            double[] cameraPosition = relativeToCamera(
+                    tagPosition[0], tagPosition[1], tagPosition[2], tagPosition[3],
+                    detection.ftcPose.range, detection.ftcPose.yaw
+            );
+            telemetry.addData("Camera Position (X, Y, yaw)",
+                String.format("%.2f, %.2f, %.2f", cameraPosition[0], cameraPosition[1], cameraPosition[2]));
 
 
-        return compensateForCameraPosition(cameraPosition[0], cameraPosition[1], cameraPosition[2], detection.ftcPose.yaw, potentiometer );
+        double[] robotPosition = compensateForCameraPosition(
+                    cameraPosition[0], cameraPosition[1],
+                    cameraPosition[2], potentiometer
+            );
+        telemetry.addData("Robot Position (X, Y, rot)",
+                String.format("%.2f, %.2f, %.2f", robotPosition[0], robotPosition[1], robotPosition[2]));
+
+        telemetry.addData("Potentiometer", potentiometer);
+
+        return robotPosition;
     }
 
 
-    private double[] relativeToCamera(int tagX, int tagY, int tagZ, double poseX, double poseY, double poseZ){
-        return new double[]{-1, -1, -1};
-    }
-    private double[] compensateForCameraPosition(double cameraX, double cameraY, double cameraZ, double tagRotation, double cameraRotation){
-        double cameraDistanceFromCenter = 19.268;//now finisjed
+    private double[] relativeToCamera(double tagX, double tagY, double tagZ, double tagRotation, double distanceFromTag, double yawFromTag) {
+        telemetry.clear();
+        // Calculate the x and y offset from the apriltag on the field
+        double xOffsetFromTag = Math.sin(yawFromTag) * distanceFromTag;
+        double yOffsetFromTag = Math.cos(yawFromTag) * distanceFromTag;
 
+        // Add telemetry for offsets
+        telemetry.addData("xOffsetFromTag", xOffsetFromTag);
+        telemetry.addData("yOffsetFromTag", yOffsetFromTag);
+
+        // Determine apriltag direction based on rotation
+        double apriltagDirectionVariable;
+        if (tagRotation == 0) {
+            apriltagDirectionVariable = 1; // If the tag is rotated 180 degrees, the tag values will be subtracted, not added
+        } else {
+            apriltagDirectionVariable = -1;
+        }
+        telemetry.addData("apriltagDirectionVariable", apriltagDirectionVariable);
+
+        // Calculate camera position
+        double cameraX = tagX + xOffsetFromTag * apriltagDirectionVariable;
+        double cameraY = tagY + yOffsetFromTag * apriltagDirectionVariable;
+        double cameraDirection = tagRotation + yawFromTag;
+
+        // Add telemetry for camera position
+        telemetry.addData("Camera X", cameraX);
+        telemetry.addData("Camera Y", cameraY);
+        telemetry.addData("Camera Direction", cameraDirection);
+
+        // Update telemetry
+
+
+        return new double[]{cameraX, cameraY, cameraDirection};
+    }
+
+    private double[] compensateForCameraPosition(double cameraX, double cameraY, double tagRotation, double cameraRotation) {
+
+        // Fixed distance from the camera to the robot's center
+        double cameraDistanceFromCenter = 119.2686; // Derived from the Pythagorean theorem (a = 100, b = 65, c = √(a² + b²))
+
+        // Calculate robot rotation
         double robotRotation = tagRotation + cameraRotation;
 
-        return new double[]{-1, -1, -1};
+        // Add telemetry for robot rotation
+        telemetry.addData("Robot Rotation", robotRotation);
+
+        // Calculate offsets
+        double xOffsetFromTag = Math.sin(robotRotation) * cameraDistanceFromCenter;
+        double yOffsetFromTag = Math.cos(robotRotation) * cameraDistanceFromCenter;
+
+        // Add telemetry for offsets
+        telemetry.addData("xOffsetFromTag", xOffsetFromTag);
+        telemetry.addData("yOffsetFromTag", yOffsetFromTag);
+
+        // Update telemetry
+        double robotX = xOffsetFromTag + cameraX;
+        double robotY = yOffsetFromTag + cameraY;
+
+
+
+        return new double[]{robotX, robotY, robotRotation};
     }
 
-    //check if some errors passed
-    private double checkNaN(double checkAble){
-        if (Double.isNaN(checkAble)){
-            return -1;
-        } else {
-            return checkAble;
-        }
-    }
 }

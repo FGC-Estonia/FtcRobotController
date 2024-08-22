@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.maps;
 public class AprilTag {
     private String description;
     private int x, y, z;
-    private int rotation;
+    private double rotation;
     private int[] detectionArea;
 
-    public AprilTag(String description, int x, int y, int z, int rotation, int[] detectionArea) {
+    public AprilTag(String description, int x, int y, int z, double rotation, int[] detectionArea) {
         this.description = description;
         this.x = x;
         this.y = y;
@@ -51,7 +51,7 @@ public class AprilTag {
         return z;
     }
 
-    public int getRotation(){return rotation;}
+    public double getRotation(){return rotation;}
 
     public int[] getDetectionArea() {
         return detectionArea;

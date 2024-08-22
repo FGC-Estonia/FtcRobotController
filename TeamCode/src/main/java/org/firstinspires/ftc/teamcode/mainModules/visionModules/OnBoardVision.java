@@ -51,7 +51,7 @@ public class OnBoardVision {
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(feedingTheFutureTagLibrary)
                 //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.MM, AngleUnit.DEGREES)
+                .setOutputUnits(DistanceUnit.MM, AngleUnit.RADIANS)
 
                 // The following default settings are available to un-comment and edit as needed.
                 .setDrawAxes(true)

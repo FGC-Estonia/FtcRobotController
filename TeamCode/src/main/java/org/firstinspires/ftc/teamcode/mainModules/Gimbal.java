@@ -14,6 +14,7 @@ public class Gimbal {
     private Servo gimbalYaw = null;
     private Servo gimbalPos = null;
 
+    SlowUpDate pitchServoUpdate;
     SlowUpDate pitchUpDate;
     SlowUpDate yawUpDate;
 
@@ -35,14 +36,15 @@ public class Gimbal {
 
     public void initGimbal(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
 
-        telemetry = telemetryPorted;
-
         pitchUpDate = new SlowUpDate();
         pitchUpDate.initSlowUpDate(10);
         yawUpDate = new SlowUpDate();
         yawUpDate.initSlowUpDate(10);
+        pitchServoUpdate = new SlowUpDate();
+        pitchServoUpdate.initSlowUpDate(60);
 
-        potentiometerHelper = new PotentiometerHelper(telemetry);
+
+        telemetry = telemetryPorted;
 
         potentiometer = hardwareMapPorted.get(AnalogInput.class, "Analog_Port_0_CH");
         gimbalPitch = hardwareMapPorted.get(Servo.class, "Servo_Port_0_CH");
@@ -72,29 +74,22 @@ public class Gimbal {
     }
 
 
-    public double moveGimbal(boolean automatic, boolean moveManual, double manualX,
-                           double manualY, double ftcPoseX, double ftcPoseY, double ftcPoseZ, boolean upDateAutomatic){// https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
-        //telemetry.addData("getPotentiometerRatio()", getPotentiometerRatio());
-        //telemetry.addData("getPotentiometerRatio()*servoRom", getPotentiometerRatio()*servoRom);
-        //telemetry.addData("wantedYaw", wantedYaw);
-        //telemetry.addData("wantedYaw*servoROM", wantedYaw*servoRom);
-        //telemetry.addData("automaticGimbal", automatic);
-        //telemetry.addData("moveManual", moveManual);
-        //telemetry.addData("wantedYaw", wantedYaw*servoRom);
+    public double moveGimbal(boolean automatic, boolean moveManual, double manualX, double manualY, double ftcPoseX, double ftcPoseY, double ftcPoseZ, boolean upDateAutomatic){
+        telemetry.addData("ftcPoseZ", ftcPoseZ);
+        telemetry.addData("ftcPoseX", ftcPoseX);
         telemetry.addData("wantedYaw", wantedYaw);
-        telemetry.addData("wanted-pot", wantedYaw-getPotentiometerRatio());
+        telemetry.addData("atan", Math.atan(ftcPoseX/ftcPoseZ));
+        telemetry.addData("uus wantedYaw ",calculateServoAngle(ftcPoseX, ftcPoseZ, true));
+        telemetry.addData("uus asukoha arvutus", wantedYaw + calculateServoAngle(ftcPoseX, ftcPoseZ, true));
 
         if (automatic && upDateAutomatic) { //upDateAutomatic is only true when the camera sees an apriltag
+            if(!(Math.abs(calculateServoAngle(ftcPoseX, ftcPoseZ, true)) < 2)){
+                double servoPosition = calculateServoAngle(ftcPoseX, ftcPoseZ, true)/245.6;
+                wantedYaw += servoPosition;
+            }
 
-            wantedYaw = calculateServoAngle(ftcPoseX, ftcPoseY, potentiometer.getVoltage());
-            /*
-            if (false) {
-                double checkNaN = Math.atan(ftcPoseY / ftcPoseZ);
-                if (!Double.isNaN(checkNaN)){
-                    wantedPitch = Math.atan(ftcPoseY / ftcPoseZ);
-                }
-            }*/
-        }else{
+        }
+        else{
 
             if (pitchUpDate.isTurn() ) {
                 //wantedPitch -= manualY/500;
@@ -115,7 +110,6 @@ public class Gimbal {
         gimbalYaw.setPosition(wantedYaw);
 
         return anglePosition();
-
     }
     private double normalize (double tooBig){
         if (tooBig<0){
@@ -126,24 +120,13 @@ public class Gimbal {
         return tooBig;
     }
 
-    private double calculateServoAngle (double xz, double y, double potMeter) {
-
-        double angleDifference = Math.atan(xz/y);
-        telemetry.addData("anglediff", angleDifference);
-        double potAngleRatio = potentiometerHelper.compareFromTables(potMeter); //create a function to return the actual angle of the potentiometer from /sdcard/potentiometerLogs1000/potentiometer_data_12.99V.txt
-
-        telemetry.addData("comparedratio", potAngleRatio);
-        telemetry.addData("wantedYaw",wantedYaw);
-        double returnAngle = potAngleRatio + angleDifference/servoRomRAD;
-
-        if (Double.isNaN(returnAngle)){
-            return getPotentiometerRatio();
-        } else {
-            return returnAngle;
+    //add comments when ready
+    private double calculateServoAngle (double xz, double y, boolean potentiometer) {
+        if (potentiometer){
+            double angleDifference = Math.atan(xz/y);
+            return Math.toDegrees(angleDifference)/10;
         }
-
-
-
+        return 1;
     }
 
 }

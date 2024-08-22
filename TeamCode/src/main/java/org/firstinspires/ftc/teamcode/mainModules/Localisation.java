@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.mainModules.visionModules.ExternalVision;
+import org.firstinspires.ftc.teamcode.mainModules.visionModules.OnBoardVision;
 import org.firstinspires.ftc.teamcode.maps.AprilTag;
 import org.firstinspires.ftc.teamcode.maps.AprilTagMapping;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -88,11 +90,11 @@ public class Localisation {
                     poseZ = detection.ftcPose.z;
 
 
-                    /*
+
                     robotPosition = calculateRobotPosition(
                             detection,
                             pitchAngle
-                            );*/
+                            );
                 }
             }
 

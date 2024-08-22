@@ -55,9 +55,10 @@ public class MoveRobot {
     }
 
     // a test to return the apriltag(s) position for testing
-        // the main function for moving the robot
-    public void move (double heading, double drive, double strafe, double turn, boolean fieldCentric,
-        boolean tractionControlToggle, boolean cameraToggle){
+    // the main function for moving the robot
+    public void move(boolean disable, double heading, double drive, double strafe, double turn, boolean fieldCentric,
+                     boolean tractionControlToggle, boolean cameraToggle) {
+        if (!disable) {
 
             {
                 if (fieldCentric) {
@@ -73,11 +74,11 @@ public class MoveRobot {
                     y = strafe;
                 }
 
-        // Calculates raw power to motors
-        double leftFrontPowerRaw = x + y + turn;
-        double leftBackPowerRaw = x - y + turn;
-        double rightFrontPowerRaw = x - y - turn;
-        double rightBackPowerRaw = x + y - turn;
+                // Calculates raw power to motors
+                double leftFrontPowerRaw = x + y + turn;
+                double leftBackPowerRaw = x - y + turn;
+                double rightFrontPowerRaw = x - y - turn;
+                double rightBackPowerRaw = x + y - turn;
 
         /*telemetry.addData("leftBackPWR", leftBackPowerRaw);
         telemetry.addData("leftFrontPWR", leftFrontPowerRaw);
@@ -118,3 +119,4 @@ public class MoveRobot {
 
         }
     }
+}

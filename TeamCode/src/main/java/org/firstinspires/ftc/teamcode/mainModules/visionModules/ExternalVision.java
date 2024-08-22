@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.mainModules;
+package org.firstinspires.ftc.teamcode.mainModules.visionModules;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ExternalVision {
     public void initExternalVision(){

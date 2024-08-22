@@ -94,12 +94,16 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
         waitForStart(); //everything has been initialized, waiting for the start button
 
         while (opModeIsActive()) { // main loop
-
+            
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
 
-            moveRobot.move(imuManager.getYawRadians(),
+            boolean disableMovement = true;
+
+            moveRobot.move(
+                    disableMovement,
+                    imuManager.getYawRadians(),
                     drive, strafe, turn, // drive
                     gamepad1_a.toggle(gamepad1.a), // toggle field centric
                     gamepad1_b.toggle(gamepad1.b),
@@ -107,6 +111,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
             );
 
             erection.raise(
+                    disableMovement,
                     gamepad2.right_stick_y, //raise back
                     gamepad2.a,
                     gamepad2.x,

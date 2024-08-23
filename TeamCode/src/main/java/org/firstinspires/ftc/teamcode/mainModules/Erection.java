@@ -12,19 +12,20 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Erection {
-    Telemetry telemetry;
-    HardwareMap hardwareMap;
+    private Telemetry telemetry;
+    private HardwareMap hardwareMap;
     private Servo leftServo;
     private Servo rightServo;
     private DcMotorEx frontElevatorEx;
     private DcMotorEx backElevatorEx;
     private TouchSensor limit;
     private boolean isInitError = false;
+    private int attemptedInitCount = 0;
 
     private void mapMotors() {
         try {
 
-            limit = hardwareMap.get(TouchSensor.class, "Digital_Port_0_EH")
+            limit = hardwareMap.get(TouchSensor.class, "Digital_Port_0_EH");
 
             leftServo = hardwareMap.get(Servo.class, "Servo_Port_4_CH");
             rightServo = hardwareMap.get(Servo.class, "Servo_Port_3_CH");
@@ -105,22 +106,35 @@ public class Erection {
             }
         } else {
             telemetry.addData("erectile initialization disfunction", true);
+            tryMapMotors();
+        }
+    }
+    public void tryMapMotors(){ //reduce failed attempted mappings = reduce useless computing
+        attemptedInitCount++;
+        if (attemptedInitCount < 1000){
             mapMotors();
         }
     }
+    public void release(boolean disable, boolean left, boolean right) {
+        try {
 
-    public void release(boolean left, boolean right) {
-        if (left){
-            leftServo.setPosition(0);
-        } else {
-            leftServo.setPosition(0.5);
-        }
-        if (right){
-            rightServo.setPosition(1);
-        } else {
-            rightServo.setPosition(0.5);
-        }
+            if (!disable && !isInitError) {
+                if (left) {
+                    leftServo.setPosition(0);
+                } else {
+                    leftServo.setPosition(0.5);
+                }
+                if (right) {
+                    rightServo.setPosition(1);
+                } else {
+                    rightServo.setPosition(0.5);
+                }
 
+            }
+        } catch (Exception e){
+            telemetry.addData("erectile initialization disfunction", true);
+            tryMapMotors();
+        }
     }
 
     public void runToHeight(int height) {

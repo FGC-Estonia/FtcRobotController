@@ -120,6 +120,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
             );
 
             erection.release(
+                    disableMovement,
                     gamepad2.dpad_left,
                     gamepad2.dpad_right
             );

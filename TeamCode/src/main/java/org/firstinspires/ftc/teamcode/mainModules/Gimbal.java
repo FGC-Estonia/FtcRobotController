@@ -31,8 +31,9 @@ public class Gimbal {
     private final double servoRom = 245.64; // the actual rom of a smart robot servo derived from testing
     private final double servoRomRAD = 4.28722677;
     private final double maxPotentiometerVoltage = 3.278;
-    private boolean targetPositionYawReached = false;
     private final double degreesPerVolt = servoRom / maxPotentiometerVoltage;
+    private boolean targetPositionYawReached = false;
+    private boolean targetPositionPitchReached = false;
 
 
     public void initGimbal(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
@@ -97,9 +98,23 @@ public class Gimbal {
                 wantedYaw += calculateServoAngle(ftcPoseX, ftcPoseY);
                 targetPositionYawReached = false;
             }
+            
             //checks if the servo is reached it's set degrees
             if (wantedYaw*servoRom == anglePosition());{
                 targetPositionYawReached = true;
+            }
+
+            // checks that the servo does not move before giving new instructions
+            //also checks that movement isn't pointlessly little
+            if (targetPositionPitchReached && (Math.abs(wantedPitch - (wantedPitch + calculateServoAngle(ftcPoseZ, ftcPoseY))) < 2));{
+                wantedPitch += calculateServoAngle(ftcPoseZ, ftcPoseY);
+                targetPositionPitchReached = false;
+            }
+            
+            //ühe asemele tuleb panna võimalus kuidas kontrollida päris servo nurka
+            //checks if the servo is reached it's set degrees
+            if (wantedPitch*servoRom == 1){
+                targetPositionPitchReached = true;
             }
         }
         //for manually moving the gimbal

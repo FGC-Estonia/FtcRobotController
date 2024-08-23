@@ -36,8 +36,6 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
     Presses gamepad1_y;
     Presses gamepad2_dpad_up;
     Presses gamepad2_right_bumper;
-  //  Presses gamepad2_dpad_left;
-    //Presses gamepad2_dpad_right;
 
     Localisation localisation;
     double[] positionData = {
@@ -77,8 +75,6 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
         gamepad1_y = new Presses();
         gamepad2_dpad_up = new Presses();
         gamepad2_right_bumper = new Presses();
-        //gamepad2_dpad_left = new Presses();
-        //gamepad2_dpad_right = new Presses();
 
 
         localisation = new Localisation();
@@ -135,18 +131,13 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
                     positionData[5],
                     positionData[6]==1
                     );
-            ;
+
 
             if (gamepad2.left_bumper) { gimbal.untuck(); }
-
             if (gamepad2.left_trigger > 0.5) { gimbal.tuck(); }
 
             gimbal.telemetryGimbal();
 
-            //telemetry.addData("gamepad2.left_trigger", gamepad2.left_trigger);
-            //telemetry.addData("field centric", gamepad1_a.returnToggleState());
-            //telemetry.addData("traction control", gamepad1_b.returnToggleState());
-            //telemetry.addData("PositionData", positionData[0]);
             positionData = localisation.returnPositionData(
                     true,
                     pitchAngle

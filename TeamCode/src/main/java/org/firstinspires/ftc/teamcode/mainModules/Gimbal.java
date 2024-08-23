@@ -31,6 +31,7 @@ public class Gimbal {
     private final double servoRom = 245.64; // the actual rom of a smart robot servo derived from testing
     private final double servoRomRAD = 4.28722677;
     private final double maxPotentiometerVoltage = 3.278;
+    private boolean targetPositionYawReached = false;
     private final double degreesPerVolt = servoRom / maxPotentiometerVoltage;
 
 
@@ -75,31 +76,42 @@ public class Gimbal {
 
 
     public double moveGimbal(boolean automatic, boolean moveManual, double manualX, double manualY, double ftcPoseX, double ftcPoseY, double ftcPoseZ, boolean upDateAutomatic){
-        telemetry.addData("ftcPoseZ", ftcPoseZ);
+        //for debuging
+        telemetry.addData("ftcPoseY", ftcPoseY);
         telemetry.addData("ftcPoseX", ftcPoseX);
         telemetry.addData("wantedYaw", wantedYaw);
-        telemetry.addData("atan", Math.atan(ftcPoseX/ftcPoseZ));
-        telemetry.addData("uus wantedYaw ",calculateServoAngle(ftcPoseX, ftcPoseZ, true));
-        telemetry.addData("uus asukoha arvutus", wantedYaw + calculateServoAngle(ftcPoseX, ftcPoseZ, true));
+        telemetry.addData("atan", Math.atan(ftcPoseX/ftcPoseY));
+        telemetry.addData("uus wantedYaw", calculateServoAngle(ftcPoseX, ftcPoseY));
+        telemetry.addData("uus asukoha arvutus", (wantedYaw - calculateServoAngle(ftcPoseX, ftcPoseY))*servoRom);
+        telemetry.addData("potentiometer", anglePosition());
+        //actual code
 
-        if (automatic && upDateAutomatic) { //upDateAutomatic is only true when the camera sees an apriltag
-            if(!(Math.abs(calculateServoAngle(ftcPoseX, ftcPoseZ, true)) < 2)){
-                double servoPosition = calculateServoAngle(ftcPoseX, ftcPoseZ, true)/245.6;
-                wantedYaw += servoPosition;
+        //automatic is true when button is pressed on controller
+        //upDateAutomatic is true when camera sees an apriltag
+        if (automatic && upDateAutomatic) {
+            // checks that the servo does not move before giving new instructions
+            //also checks that movement isn't pointlessly little
+            if (targetPositionYawReached && (Math.abs(wantedYaw - (wantedYaw + calculateServoAngle(ftcPoseX, ftcPoseY))) < 2));
+            {
+                //adds the degrees to centre apriltag and sets the variable targetPositionYawReached to false so it ain't adding more so servo doesn't end up in one corners
+                wantedYaw += calculateServoAngle(ftcPoseX, ftcPoseY);
+                targetPositionYawReached = false;
             }
-
+            //checks if the servo is reached it's set degrees
+            if (wantedYaw*servoRom == anglePosition());{
+                targetPositionYawReached = true;
+            }
         }
-        else{
-
-            if (pitchUpDate.isTurn() ) {
-                //wantedPitch -= manualY/500;
+        //for manually moving the gimbal
+        else {
+            //to move pitch axes
+            if (pitchUpDate.isTurn()) {
+                wantedPitch -= manualY/500; // Uncomment and use as needed
             }
-
+            //to move yaw axes
             if (yawUpDate.isTurn()) {
-                wantedYaw += manualX/200;
+                wantedYaw += manualX / 200;
             }
-
-
         }
 
         wantedYaw = normalize(wantedYaw);
@@ -120,13 +132,13 @@ public class Gimbal {
         return tooBig;
     }
 
-    //add comments when ready
-    private double calculateServoAngle (double xz, double y, boolean potentiometer) {
-        if (potentiometer){
-            double angleDifference = Math.atan(xz/y);
-            return Math.toDegrees(angleDifference)/10;
-        }
-        return 1;
+    //gives values from 0  to 1 that is used to move servo
+    private double calculateServoAngle (double xz, double y) {
+        //uses tangents to calculate radians then converts those to degrees and divides by 10 to get the actual degrees
+        //and then dividing by 245.6 to get value 0 to 1 where 0 is 0 degrees and 1 is 245.6
+        double angleDifference = Math.atan(xz/y);
+        double degrees = Math.toDegrees(angleDifference)/10;
+        return degrees/servoRom;
     }
 
 }

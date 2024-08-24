@@ -73,17 +73,17 @@ public class Erection {
         if (!isInitError && !disable) {
             try {
                 telemetry.addData("Erection level:",(frontElevatorEx.getCurrentPosition()+backElevatorEx.getCurrentPosition())/2);
-                if (bottom) {
-                    runToHeight(1500);
+                if (bottom && !(height80 || height100 || height120)) {
+                    runToHeight(300);
                 }
-                if (height80) {
-                    runToHeight(7200);
+                if (height80 && !(bottom || height100 || height120)) {
+                    runToHeight(3200);
                 }
-                if (height100) {
-                    runToHeight(9380);
+                if (height100 && !(height80 || bottom || height120)) {
+                    runToHeight(4000);
                 }
-                if (height120) {
-                    runToHeight(11000);
+                if (height120 && !(height80 || height100 || bottom)) {
+                    runToHeight(4900);
                 }
                 if (!(height80 || height100 || bottom || height120)){
 

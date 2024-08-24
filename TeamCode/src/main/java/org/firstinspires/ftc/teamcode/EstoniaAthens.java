@@ -37,6 +37,11 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
     Presses gamepad2_dpad_up;
     Presses gamepad2_right_bumper;
 
+    Presses gamepad2_a;
+    Presses gamepad2_b;
+    Presses gamepad2_x;
+    Presses gamepad2_y;
+
     Localisation localisation;
     double[] positionData = {
             0, //x
@@ -76,6 +81,13 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
         gamepad2_dpad_up = new Presses();
         gamepad2_right_bumper = new Presses();
 
+        Presses.ToggleGroup gamepad2ToggleGroup = new Presses.ToggleGroup();
+
+        gamepad2_a = new Presses(gamepad2ToggleGroup);
+        gamepad2_b = new Presses(gamepad2ToggleGroup);
+        gamepad2_x = new Presses(gamepad2ToggleGroup);
+        gamepad2_y = new Presses(gamepad2ToggleGroup);
+
 
         localisation = new Localisation();
         localisation.initVision(hardwareMap, telemetry);
@@ -109,10 +121,10 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
             erection.raise(
                     disableMovement,
                     gamepad2.right_stick_y, //raise back
-                    gamepad2.a,
-                    gamepad2.x,
-                    gamepad2.b,
-                    gamepad2.y
+                    gamepad2_a.toggle(gamepad2.a),
+                    gamepad2_x.toggle(gamepad2.x),
+                    gamepad2_b.toggle(gamepad2.b),
+                    gamepad2_y.toggle(gamepad2.y)
             );
 
             erection.release(

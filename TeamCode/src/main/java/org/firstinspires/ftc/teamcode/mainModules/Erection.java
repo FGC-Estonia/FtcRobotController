@@ -22,6 +22,7 @@ public class Erection {
     private boolean isInitError = false;
     private int attemptedInitCount = 0;
 
+
     private void mapMotors() {
         try {
 
@@ -48,7 +49,7 @@ public class Erection {
             backElevatorEx.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
             isInitError = false;
-        } catch (Exception e) {
+        } catch (Exception eInit) {
             isInitError = true;
         }
     }
@@ -111,7 +112,8 @@ public class Erection {
     }
     public void tryMapMotors(){ //reduce failed attempted mappings = reduce useless computing
         attemptedInitCount++;
-        if (attemptedInitCount < 1000){
+        if (attemptedInitCount < 100000){
+            telemetry.addLine("attempting mapping");
             mapMotors();
         }
     }
@@ -133,6 +135,7 @@ public class Erection {
             }
         } catch (Exception e){
             telemetry.addData("erectile initialization disfunction", true);
+            telemetry.addData("error", e.toString());
             tryMapMotors();
         }
     }

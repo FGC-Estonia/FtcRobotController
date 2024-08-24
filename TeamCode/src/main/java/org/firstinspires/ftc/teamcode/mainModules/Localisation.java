@@ -149,7 +149,6 @@ public class Localisation {
 
 
     private double[] relativeToCamera(double tagX, double tagY, double tagZ, double tagRotation, double distanceFromTag, double yawFromTag) {
-        telemetry.clear();
         // Calculate the x and y offset from the apriltag on the field
         double xOffsetFromTag = Math.sin(yawFromTag) * distanceFromTag;
         double yOffsetFromTag = Math.cos(yawFromTag) * distanceFromTag;

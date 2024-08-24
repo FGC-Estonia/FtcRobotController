@@ -18,6 +18,7 @@ public class Gimbal {
     SlowUpDate pitchUpDate;
     SlowUpDate yawUpDate;
 
+
     PotentiometerHelper potentiometerHelper;
 
     /*
@@ -92,7 +93,7 @@ public class Gimbal {
         if (automatic && upDateAutomatic) {
             // checks that the servo does not move before giving new instructions
             //also checks that movement isn't pointlessly little
-            if (targetPositionYawReached && (Math.abs(wantedYaw - (wantedYaw + calculateServoAngle(ftcPoseX, ftcPoseY))) < 2));
+            if (targetPositionYawReached && (Math.abs(wantedYaw - (wantedYaw + calculateServoAngle(ftcPoseX, ftcPoseY))) < 1));
             {
                 //adds the degrees to centre apriltag and sets the variable targetPositionYawReached to false so it ain't adding more so servo doesn't end up in one corners
                 wantedYaw += calculateServoAngle(ftcPoseX, ftcPoseY);
@@ -113,7 +114,7 @@ public class Gimbal {
             
             //ühe asemele tuleb panna võimalus kuidas kontrollida päris servo nurka
             //checks if the servo is reached it's set degrees
-            if (wantedPitch*servoRom == 1){
+            if (pitchServoUpdate.isTurn()){
                 targetPositionPitchReached = true;
             }
         }

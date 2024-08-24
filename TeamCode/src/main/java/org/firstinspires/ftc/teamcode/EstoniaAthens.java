@@ -95,7 +95,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
             double strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
 
-            boolean disableMovement = true;
+            boolean disableMovement = false;
 
             moveRobot.move(
                     disableMovement,

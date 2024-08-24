@@ -71,6 +71,7 @@ public class Erection {
 
         if (!isInitError && !disable) {
             try {
+                telemetry.addData("Erection level:",(frontElevatorEx.getCurrentPosition()+backElevatorEx.getCurrentPosition())/2);
                 if (bottom) {
                     runToHeight(1500);
                 }

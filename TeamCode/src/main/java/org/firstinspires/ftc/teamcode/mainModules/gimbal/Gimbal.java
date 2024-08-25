@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.mainModules;  //place where the code is located
+package org.firstinspires.ftc.teamcode.mainModules.gimbal;  //place where the code is located
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.mainModules.GimbalModules.PotentiometerHelper;
 
 public class Gimbal {
 

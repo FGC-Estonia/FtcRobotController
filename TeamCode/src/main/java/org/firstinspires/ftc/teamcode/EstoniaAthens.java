@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.mainModules.Erection;
 import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
 import org.firstinspires.ftc.teamcode.mainModules.Presses;
-import org.firstinspires.ftc.teamcode.mainModules.Gimbal;
-import org.firstinspires.ftc.teamcode.mainModules.Localisation;
+import org.firstinspires.ftc.teamcode.mainModules.gimbal.Gimbal;
+import org.firstinspires.ftc.teamcode.mainModules.localisation.Localisation;
 
 @TeleOp(name = "Main code EstoniaAthens")
 // allows to display the code in the driver station, comment out to remove

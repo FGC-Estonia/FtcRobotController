@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.maps;
 
 public class AprilTag {
     private String description;
-    private int x, y, z;
+    private double x, y, z;
     private double rotation;
-    private int[] detectionArea;
+    private double[] detectionArea;
 
-    public AprilTag(String description, int x, int y, int z, double rotation, int[] detectionArea) {
+    public AprilTag(String description, double x, double y, double z, double rotation, double[] detectionArea) {
         this.description = description;
         this.x = x;
         this.y = y;
@@ -15,7 +15,7 @@ public class AprilTag {
         this.detectionArea = detectionArea;
     }
     @Deprecated
-    public void setAttributes(String description, int x, int y, int z, int[] additionalAttributes) {
+    public void setAttributes(String description, double x, double y, double z, double[] additionalAttributes) {
         this.description = description;
         this.x = x;
         this.y = y;
@@ -39,21 +39,21 @@ public class AprilTag {
         return description;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
-    public int getZ() {
+    public double getZ() {
         return z;
     }
 
     public double getRotation(){return rotation;}
 
-    public int[] getDetectionArea() {
+    public double[] getDetectionArea() {
         return detectionArea;
     }
 }

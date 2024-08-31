@@ -28,13 +28,14 @@ public class Localisation {
 
     private AprilTagMapping aprilTagMapping;
 
-    public void initVision(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
-        hardwareMap = hardwareMapPorted;
-        telemetry = telemetryPorted;
+    //init the external and internal visionProcessors with safeguards
+    public void initVision(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
 
         aprilTagMapping  = new AprilTagMapping();
-
         onBoardVision = new OnBoardVision();
+
         try {
             onBoardVision.initProcessor(hardwareMap, telemetry);
         } catch (Exception e1) {
@@ -52,6 +53,7 @@ public class Localisation {
     }
 
     public double[] returnPositionData(boolean forceOnBoardProcessor, double pitchAngle) {
+        telemetry.clear();
         boolean isUpdated = false;
         double[] robotPosition = new double[]{-1, -1, -1}; //set deafult value to -1 if not detected because robots position cant be negative
         double poseX = 0; //if 0:0 the gimbal will not move so 0:0 is the deafult return
@@ -101,8 +103,7 @@ public class Localisation {
             }
 
         } catch (Exception e) {
-            telemetry.addData("error", e.toString());
-            telemetry.addData("VisionError", true);
+            telemetry.addData("VisionError", e.getMessage());
 
         }
         return new double[]{

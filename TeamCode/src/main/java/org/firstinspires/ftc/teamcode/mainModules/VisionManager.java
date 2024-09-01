@@ -9,7 +9,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-public class Localisation {
+public class VisionManager {
 
     private OnBoardVision onBoardVision;
     private ExternalVision externalVision;
@@ -47,7 +47,6 @@ public class Localisation {
     }
 
     public double[] returnPositionData(boolean forceOnBoardProcessor) {
-        telemetry.clear();
         boolean isUpdated = false;
         double poseX = 0; //if 0:0 the gimbal will not move so 0:0 is the deafult return
         double poseY = 0;

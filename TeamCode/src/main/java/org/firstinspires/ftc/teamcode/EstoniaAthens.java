@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
 import org.firstinspires.ftc.teamcode.mainModules.Presses;
 import org.firstinspires.ftc.teamcode.mainModules.gimbal.Gimbal;
-import org.firstinspires.ftc.teamcode.mainModules.Localisation;
+import org.firstinspires.ftc.teamcode.mainModules.VisionManager;
 
 @TeleOp(name = "Main code EstoniaAthens")
 // allows to display the code in the driver station, comment out to remove
@@ -31,9 +31,8 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
 
     ImuManager imuManager;
     MoveRobot moveRobot;
+
     Presses gamepad1_a;
-    Presses gamepad1_b;
-    Presses gamepad1_y;
     Presses gamepad2_dpad_up;
     Presses gamepad2_right_bumper;
 
@@ -42,7 +41,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
     Presses gamepad2_x;
     Presses gamepad2_y;
 
-    Localisation localisation;
+    VisionManager visionManager;
     double[] positionData = {
             0, //x
             0, //y
@@ -76,8 +75,6 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
         moveRobot.initMoveRobot(hardwareMap, telemetry);
 
         gamepad1_a = new Presses();
-        gamepad1_b = new Presses();
-        gamepad1_y = new Presses();
         gamepad2_dpad_up = new Presses();
         gamepad2_right_bumper = new Presses();
 
@@ -89,8 +86,8 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
         gamepad2_y = new Presses(gamepad2ToggleGroup);
 
 
-        localisation = new Localisation();
-        localisation.initVision(hardwareMap, telemetry);
+        visionManager = new VisionManager();
+        visionManager.initVision(hardwareMap, telemetry);
 
         gimbal = new Gimbal();
         gimbal.initGimbal(hardwareMap, telemetry);
@@ -113,9 +110,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
                     disableMovement,
                     imuManager.getYawRadians(),
                     drive, strafe, turn, // drive
-                    gamepad1_a.toggle(gamepad1.a), // toggle field centric
-                    gamepad1_b.toggle(gamepad1.b),
-                    gamepad1_y.toggle(gamepad1.y)//toggle traction control
+                    gamepad1_a.toggle(gamepad1.a)// toggle field centric
             );
 
             erection.raise(
@@ -150,7 +145,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
 
             gimbal.telemetryGimbal();
 
-            positionData = localisation.returnPositionData(true);
+            positionData = visionManager.returnPositionData(true);
 
             telemetry.update();
         }

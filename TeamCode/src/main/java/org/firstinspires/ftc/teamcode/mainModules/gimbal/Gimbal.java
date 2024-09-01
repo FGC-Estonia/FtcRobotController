@@ -5,56 +5,57 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.nio.charset.CharacterCodingException;
+
 public class Gimbal {
 
-
-    private AnalogInput potentiometer = null;
-    private Servo gimbalPitch = null;
-    private Servo gimbalYaw = null;
-    private Servo gimbalPos = null;
-
-    SlowUpDate pitchServoUpdate;
-    SlowUpDate pitchUpDate;
-    SlowUpDate yawUpDate;
-
-
-    PotentiometerHelper potentiometerHelper;
-
-    /*
-    private double wantedPitch = 1; //initial deafult values
-    private double wantedYaw = 0.9;
-    */
-    private double wantedPitch = 0.91; //initial deafult values
+    //initial deafult values
+    private double wantedPitch = 0.91;
     private double wantedYaw = 0.71;
-    private Telemetry telemetry;
 
     private final double servoRom = 245.64; // the actual rom of a smart robot servo derived from testing
     private final double servoRomRAD = 4.28722677;
     private final double maxPotentiometerVoltage = 3.278;
     private final double degreesPerVolt = servoRom / maxPotentiometerVoltage;
+
     private boolean targetPositionYawReached = false;
     private boolean targetPositionPitchReached = false;
 
+    //these are interacted with in multiple places so they need to be here.
+    private AnalogInput potentiometer = null;
+    private Servo gimbalPitch = null;
+    private Servo gimbalYaw = null;
+    private Servo gimbalPos = null;
 
-    public void initGimbal(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
+    private final Telemetry telemetry;
+    private final HardwareMap hardwareMap;
 
-        pitchUpDate = new SlowUpDate();
-        pitchUpDate.initSlowUpDate(10);
-        yawUpDate = new SlowUpDate();
-        yawUpDate.initSlowUpDate(10);
-        pitchServoUpdate = new SlowUpDate();
-        pitchServoUpdate.initSlowUpDate(60);
+    SlowUpDate pitchServoUpdate;
+    SlowUpDate yawUpDate;
+    SlowUpDate pitchUpDate;
 
 
-        telemetry = telemetryPorted;
 
-        potentiometer = hardwareMapPorted.get(AnalogInput.class, "Analog_Port_0_CH");
-        gimbalPitch = hardwareMapPorted.get(Servo.class, "Servo_Port_0_CH");
-        gimbalYaw = hardwareMapPorted.get(Servo.class, "Servo_Port_1_CH");
-        gimbalPos = hardwareMapPorted.get(Servo.class, "Servo_Port_2_CH");
+    public Gimbal(HardwareMap hardwareMap, Telemetry telemetry){
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
+        initGimbal();
+    }
+
+    public void initGimbal() {
+
+        pitchUpDate = new SlowUpDate(10);
+        yawUpDate = new SlowUpDate(10);
+        pitchServoUpdate = new SlowUpDate(60);
+
+        potentiometer = hardwareMap.get(AnalogInput.class, "Analog_Port_0_CH");
+        gimbalPitch = hardwareMap.get(Servo.class, "Servo_Port_0_CH");
+        gimbalYaw = hardwareMap.get(Servo.class, "Servo_Port_1_CH");
+        gimbalPos = hardwareMap.get(Servo.class, "Servo_Port_2_CH");
     }
 
     public double getPotentiometerRatio(){
+
         return 1-potentiometer.getVoltage()/maxPotentiometerVoltage;
     }
 
@@ -163,7 +164,7 @@ class SlowUpDate {
     private long msBetween = 20;
     private long lastTime = System.currentTimeMillis();
 
-    void initSlowUpDate(long msBetween){
+    SlowUpDate(long msBetween){
         this.msBetween = msBetween;
     }
 

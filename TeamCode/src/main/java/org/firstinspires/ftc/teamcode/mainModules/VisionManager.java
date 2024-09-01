@@ -22,11 +22,14 @@ public class VisionManager {
     private boolean onBoardInitError = false;
     private boolean externalInitError = false;
 
-
-    //init the external and internal visionProcessors with safeguards
-    public void initVision(HardwareMap hardwareMap, Telemetry telemetry) {
+    public VisionManager(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
+        initVision();
+    }
+
+    //init the external and internal visionProcessors with safeguards
+    public void initVision() {
 
         onBoardVision = new OnBoardVision();
 

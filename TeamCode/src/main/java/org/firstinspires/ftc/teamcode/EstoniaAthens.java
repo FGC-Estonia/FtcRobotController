@@ -22,45 +22,19 @@ import org.firstinspires.ftc.teamcode.mainModules.VisionManager;
 @TeleOp(name = "Main code EstoniaAthens")
 // allows to display the code in the driver station, comment out to remove
 public class EstoniaAthens extends LinearOpMode { //file name is Main.java    extends the prebuilt LinearOpMode by rev to run
-    /*
-     * Import external classes
-     * class name  name to be used in this class;
-     *eg:
-     * RunMotor runMotor;
-     */
 
-    ImuManager imuManager;
-    MoveRobot moveRobot;
-
-    Presses gamepad1_a;
-    Presses gamepad2_dpad_up;
-    Presses gamepad2_right_bumper;
-
-    Presses gamepad2_a;
-    Presses gamepad2_b;
-    Presses gamepad2_x;
-    Presses gamepad2_y;
-
-    VisionManager visionManager;
     double[] positionData = {
-            0, //x
-            0, //y
-            0, //Z
             0, //PoseX
             0, //PoseY
             0, //PoseZ
             0, //updatedFrame
     };
 
-    Erection erection;
-
-    Gimbal gimbal;
-
     @Override
     public void runOpMode() {
         /*
          * map objects
-         * name to be used = new class()
+         * objectName = new ClassName()
          * eg:
          * runMotor = new RunMotor();
          *
@@ -68,32 +42,23 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
          * eg:
          * runMotor.initRunMotor(hardwareMap);
          */
-        imuManager = new ImuManager();
-        imuManager.initImu(hardwareMap, telemetry);
+        
+        ImuManager imuManager = new ImuManager(hardwareMap, telemetry);
+        MoveRobot moveRobot = new MoveRobot(hardwareMap, telemetry, false);
+        VisionManager visionManager = new VisionManager(hardwareMap, telemetry);
+        Gimbal gimbal = new Gimbal(hardwareMap, telemetry);
+        Erection erection = new Erection(hardwareMap, telemetry);
 
-        moveRobot = new MoveRobot();
-        moveRobot.initMoveRobot(hardwareMap, telemetry);
-
-        gamepad1_a = new Presses();
-        gamepad2_dpad_up = new Presses();
-        gamepad2_right_bumper = new Presses();
+        Presses gamepad1_a = new Presses();
+        Presses gamepad2_dpad_up = new Presses();
 
         Presses.ToggleGroup gamepad2ToggleGroup = new Presses.ToggleGroup();
 
-        gamepad2_a = new Presses(gamepad2ToggleGroup);
-        gamepad2_b = new Presses(gamepad2ToggleGroup);
-        gamepad2_x = new Presses(gamepad2ToggleGroup);
-        gamepad2_y = new Presses(gamepad2ToggleGroup);
+        Presses gamepad2_a = new Presses(gamepad2ToggleGroup);
+        Presses gamepad2_b = new Presses(gamepad2ToggleGroup);
+        Presses gamepad2_x = new Presses(gamepad2ToggleGroup);
+        Presses gamepad2_y = new Presses(gamepad2ToggleGroup);
 
-
-        visionManager = new VisionManager();
-        visionManager.initVision(hardwareMap, telemetry);
-
-        gimbal = new Gimbal();
-        gimbal.initGimbal(hardwareMap, telemetry);
-
-        erection = new Erection();
-        erection.initErection(hardwareMap, telemetry);
 
         telemetry.update();
         waitForStart(); //everything has been initialized, waiting for the start button

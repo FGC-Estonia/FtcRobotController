@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.mainModules;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -9,14 +8,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class ImuManager {
+
+    //These are used in multiple places so they need to be defined here
     private IMU imu;
 
-    private double lastAngle = 0; //safety in case the imu fails
+    private boolean imuErrorBoolean = false;
 
-    private boolean imuInitError = false;
-
-    private HardwareMap hardwareMap;
-    private Telemetry telemetry;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
 
     public void initImu(){
         try {
@@ -31,34 +30,32 @@ public class ImuManager {
             imu.initialize(new IMU.Parameters(orientationOnRobot));
 
             imu.resetYaw();
-            imuInitError = false;
-        } catch (Exception e) {
-            imuInitError = true;
-            telemetry.addData("imu Init error", true);
+            imuErrorBoolean = false;
+        } catch (Exception errorInitIMU) {
+            imuErrorBoolean = true;
+            telemetry.addData("IMU error", errorInitIMU.getMessage());
         }
     }
 
-    public void initImu(HardwareMap hardwareMap, Telemetry telemetry) {
+    public ImuManager(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         initImu();
     }
 
-    public IMU get(){
-        return imu;
-    }
-
     public double getYawRadians(){
-        if (imuInitError) {
+        double lastAngle = 0; //if the imu fails in the middle of the game, it will not flick to an angle because the imuManager returned 0, instead it will just stop working safely
+
+        //if the imu has failed it will attempt to restart it.
+        if (imuErrorBoolean) {
             initImu();
         }
 
         try {
-            double angle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            lastAngle = angle;
+            lastAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             return lastAngle;
-        } catch (Exception e){
-            telemetry.addData("imu error", true);
+        } catch (Exception errorIMU){
+            telemetry.addData("IMU ERROR", errorIMU.getMessage());
             return 0;
         }
 

@@ -54,7 +54,7 @@ public class Erection {
         }
     }
 
-    public void initErection(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
+    public Erection(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
 
             hardwareMap = hardwareMapPorted;
             telemetry = telemetryPorted;
@@ -62,11 +62,6 @@ public class Erection {
             mapMotors();
     }
 
-  /*  public double height(){
-        return (double) (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) /2;
-    }
-
-   */
 
     public void raise(boolean disable, double rightStick, boolean bottom, boolean height80, boolean height100, boolean height120) {
 

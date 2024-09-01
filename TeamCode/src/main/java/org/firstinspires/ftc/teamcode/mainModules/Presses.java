@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Presses {
+
     private boolean toggledVariable = false;
     private boolean wasPressedVariable = false;
     private ToggleGroup toggleGroup = null; // Reference to the group

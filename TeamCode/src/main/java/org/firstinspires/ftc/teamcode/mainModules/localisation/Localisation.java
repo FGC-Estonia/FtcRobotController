@@ -84,6 +84,22 @@ public class Localisation {
 
             if (isUpdated && aprilTagDetections != null) {
                 for (AprilTagDetection detection : aprilTagDetections) {
+
+                    telemetry.addData("AprilTag ID", detection.id);
+                    telemetry.addData("Decision Margin", detection.decisionMargin);
+                    telemetry.addData("Frame Acquisition Time (ns)", detection.frameAcquisitionNanoTime);
+
+                    telemetry.addData("FTC Pose X", detection.ftcPose.x);
+                    telemetry.addData("FTC Pose Y", detection.ftcPose.y);
+                    telemetry.addData("FTC Pose Z", detection.ftcPose.z);
+                    telemetry.addData("FTC Pose Yaw", detection.ftcPose.yaw);
+                    telemetry.addData("FTC Pose Pitch", detection.ftcPose.pitch);
+                    telemetry.addData("FTC Pose Roll", detection.ftcPose.roll);
+                    telemetry.addData("FTC Pose Bearing", detection.ftcPose.bearing);
+                    telemetry.addData("FTC Pose Range", detection.ftcPose.range);
+                    telemetry.addData("FTC Pose Elevation", detection.ftcPose.elevation);
+
+
                     isPositionData = 1;
 
                     poseX = detection.ftcPose.x;
@@ -111,29 +127,29 @@ public class Localisation {
     private double[] calculateRobotPosition(AprilTagDetection detection, double potentiometer) throws Exception{
 
             // Get the tag's position from the map based on its ID
-            telemetry.addData("ID", detection.id);
+            /*telemetry.addData("ID", detection.id);*/
             //telemetry.addLine();
 
             double[] tagPosition = aprilTagMapping.getTagLocation(detection.id);
-        telemetry.addData("2", true);
+        /*telemetry.addData("2", true);
             telemetry.addData("Tag Position (X, Y, Z, Yaw)",
-                String.format("%.2f, %.2f, %.2f, %.2f", tagPosition[0], tagPosition[1], tagPosition[2], tagPosition[3]));
+                String.format("%.2f, %.2f, %.2f, %.2f", tagPosition[0], tagPosition[1], tagPosition[2], tagPosition[3]));*/
 
 
             double[] cameraPosition = relativeToCamera(
                     tagPosition[0], tagPosition[1], tagPosition[2], tagPosition[3],
                     detection.ftcPose.range, detection.ftcPose.yaw
             );
-            telemetry.addData("Camera Position (X, Y, yaw)",
-                String.format("%.2f, %.2f, %.2f", cameraPosition[0], cameraPosition[1], cameraPosition[2]));
+            /*telemetry.addData("Camera Position (X, Y, yaw)",
+                String.format("%.2f, %.2f, %.2f", cameraPosition[0], cameraPosition[1], cameraPosition[2]));*/
 
 
         double[] robotPosition = compensateForCameraPosition(
                     cameraPosition[0], cameraPosition[1],
                     cameraPosition[2], potentiometer
             );
-        telemetry.addData("Robot Position (X, Y, rot)",
-                String.format("%.2f, %.2f, %.2f", robotPosition[0], robotPosition[1], robotPosition[2]));
+        /*telemetry.addData("Robot Position (X, Y, rot)",
+                String.format("%.2f, %.2f, %.2f", robotPosition[0], robotPosition[1], robotPosition[2]));*/
 
 
         return robotPosition;
@@ -145,8 +161,8 @@ public class Localisation {
         double xOffsetFromTag = Math.sin(yawFromTag) * distanceFromTag;
         double yOffsetFromTag = Math.cos(yawFromTag) * distanceFromTag;
 
-        telemetry.addData("yawFromTag",
-                String.format("%.2f, %.2f", yawFromTag, yawFromTag*180/ Math.PI));
+        /*telemetry.addData("yawFromTag",
+                String.format("%.2f, %.2f", yawFromTag, yawFromTag*180/ Math.PI));*/
 
         // Determine apriltag direction based on rotation
         double apriltagDirectionVariable;

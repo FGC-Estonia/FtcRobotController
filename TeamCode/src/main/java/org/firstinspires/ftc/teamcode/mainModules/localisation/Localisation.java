@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.maps.AprilTagMapping;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.opencv.core.Mat;
 
 import java.util.List;
 
@@ -88,10 +89,6 @@ public class Localisation {
                     poseX = detection.ftcPose.x;
                     poseY = detection.ftcPose.y;
                     poseZ = detection.ftcPose.z;
-                    telemetry.addLine("tag data");
-                    telemetry.addData("Pose X", poseX);
-                    telemetry.addData("Pose Y", poseY);
-                    telemetry.addData("Pose Z", poseZ);
 
 
 
@@ -138,7 +135,6 @@ public class Localisation {
         telemetry.addData("Robot Position (X, Y, rot)",
                 String.format("%.2f, %.2f, %.2f", robotPosition[0], robotPosition[1], robotPosition[2]));
 
-        telemetry.addData("Potentiometer", potentiometer);
 
         return robotPosition;
     }
@@ -149,9 +145,8 @@ public class Localisation {
         double xOffsetFromTag = Math.sin(yawFromTag) * distanceFromTag;
         double yOffsetFromTag = Math.cos(yawFromTag) * distanceFromTag;
 
-        // Add telemetry for offsets
-        telemetry.addData("xOffsetFromTag", xOffsetFromTag);
-        telemetry.addData("yOffsetFromTag", yOffsetFromTag);
+        telemetry.addData("yawFromTag",
+                String.format("%.2f, %.2f", yawFromTag, yawFromTag*180/ Math.PI));
 
         // Determine apriltag direction based on rotation
         double apriltagDirectionVariable;
@@ -160,20 +155,10 @@ public class Localisation {
         } else {
             apriltagDirectionVariable = -1;
         }
-        telemetry.addData("apriltagDirectionVariable", apriltagDirectionVariable);
-
         // Calculate camera position
         double cameraX = tagX + xOffsetFromTag * apriltagDirectionVariable;
         double cameraY = tagY + yOffsetFromTag * apriltagDirectionVariable;
         double cameraDirection = tagRotation + yawFromTag;
-
-        // Add telemetry for camera position
-        telemetry.addData("Camera X", cameraX);
-        telemetry.addData("Camera Y", cameraY);
-        telemetry.addData("Camera Direction", cameraDirection);
-
-        // Update telemetry
-
 
         return new double[]{cameraX, cameraY, cameraDirection};
     }
@@ -186,16 +171,9 @@ public class Localisation {
         // Calculate robot rotation
         double robotRotation = tagRotation + cameraRotation;
 
-        // Add telemetry for robot rotation
-        telemetry.addData("Robot Rotation", robotRotation);
-
         // Calculate offsets
         double xOffsetFromTag = Math.sin(robotRotation) * cameraDistanceFromCenter;
         double yOffsetFromTag = Math.cos(robotRotation) * cameraDistanceFromCenter;
-
-        // Add telemetry for offsets
-        telemetry.addData("xOffsetFromTag", xOffsetFromTag);
-        telemetry.addData("yOffsetFromTag", yOffsetFromTag);
 
         // Update telemetry
         double robotX = xOffsetFromTag + cameraX;

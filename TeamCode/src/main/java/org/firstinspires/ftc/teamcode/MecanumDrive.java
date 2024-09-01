@@ -456,6 +456,13 @@ public final class MecanumDrive {
         Twist2dDual<Time> twist = localizer.update();
         pose = pose.plus(twist.value());
 
+        double x_mm = pose.position.x * 25.4;
+        double y_mm = pose.position.y * 25.4;
+        double rot = pose.heading.toDouble();
+
+        String robotPosition = String.format("Robot Position (%.2f, %.2f, %.2f)", x_mm, y_mm, rot);
+        System.out.println(robotPosition);
+
         poseHistory.add(pose);
         while (poseHistory.size() > 100) {
             poseHistory.removeFirst();

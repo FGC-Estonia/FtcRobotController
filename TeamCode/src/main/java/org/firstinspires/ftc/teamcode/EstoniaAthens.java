@@ -12,6 +12,7 @@ package org.firstinspires.ftc.teamcode;  //place where the code is located
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.mainModules.Alignment;
 import org.firstinspires.ftc.teamcode.mainModules.Erection;
 import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
@@ -48,6 +49,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
         VisionManager visionManager = new VisionManager(hardwareMap, telemetry);
         Gimbal gimbal = new Gimbal(hardwareMap, telemetry);
         Erection erection = new Erection(hardwareMap, telemetry);
+        Alignment alignment = new Alignment(hardwareMap, telemetry);
 
         Presses gamepad1_a = new Presses();
         Presses gamepad2_dpad_up = new Presses();

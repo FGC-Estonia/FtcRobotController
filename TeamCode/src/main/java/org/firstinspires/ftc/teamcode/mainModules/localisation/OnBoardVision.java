@@ -62,7 +62,7 @@ public class OnBoardVision {
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
                 // to load a predefined calibration for your camera.
-                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                //.setLensIntrinsics(768.437, 768.437, 326.985, 161.477)
                 // ... these parameters are fx, fy, cx, cy.
 
                 .build();

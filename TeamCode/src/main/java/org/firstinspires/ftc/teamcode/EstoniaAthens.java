@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
 import org.firstinspires.ftc.teamcode.mainModules.Presses;
 import org.firstinspires.ftc.teamcode.mainModules.gimbal.Gimbal;
-import org.firstinspires.ftc.teamcode.mainModules.localisation.Localisation;
+import org.firstinspires.ftc.teamcode.mainModules.Localisation;
 
 @TeleOp(name = "Main code EstoniaAthens")
 // allows to display the code in the driver station, comment out to remove
@@ -133,15 +133,15 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
                     gamepad2.dpad_right
             );
 
-            double pitchAngle = gimbal.moveGimbal(
+            gimbal.moveGimbal(
                     gamepad2_dpad_up.toggle(gamepad2.dpad_up),
                     gamepad2.dpad_down,
                     gamepad2.left_stick_x,
                     gamepad2.left_stick_y,
-                    positionData[3],
-                    positionData[4],
-                    positionData[5],
-                    positionData[6]==1
+                    positionData[0],
+                    positionData[1],
+                    positionData[2],
+                    positionData[3]==1
                     );
 
 
@@ -150,23 +150,9 @@ public class EstoniaAthens extends LinearOpMode { //file name is Main.java    ex
 
             gimbal.telemetryGimbal();
 
-            positionData = localisation.returnPositionData(
-                    true,
-                    pitchAngle
-            );
-            //pos
+            positionData = localisation.returnPositionData(true);
 
             telemetry.update();
-            if (false){ //debugging
-                while (true){
-                    if (gamepad2_right_bumper.released(gamepad2.right_bumper)){
-                        break;
-                    } if (gamepad2.right_trigger >0.5) {
-                        break;
-                    }
-                }
-            }
-
         }
     }
 }

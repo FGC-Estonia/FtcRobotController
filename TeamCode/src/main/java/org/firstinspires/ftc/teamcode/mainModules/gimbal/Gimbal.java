@@ -76,7 +76,7 @@ public class Gimbal {
     }
 
 
-    public double moveGimbal(boolean automatic, boolean moveManual, double manualX, double manualY, double ftcPoseX, double ftcPoseY, double ftcPoseZ, boolean upDateAutomatic){
+    public void moveGimbal(boolean automatic, boolean moveManual, double manualX, double manualY, double ftcPoseX, double ftcPoseY, double ftcPoseZ, boolean upDateAutomatic){
         //for debuging
         telemetry.addData("ftcPoseY", ftcPoseY);
         telemetry.addData("ftcPoseX", ftcPoseX);
@@ -136,7 +136,7 @@ public class Gimbal {
         gimbalPitch.setPosition(wantedPitch);
         gimbalYaw.setPosition(wantedYaw);
 
-        return anglePosition();
+
     }
     private double normalize (double tooBig){
         if (tooBig<0){

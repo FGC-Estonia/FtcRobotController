@@ -3,8 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Gamepad Attributes Example")
+@TeleOp(name = "Gamepad state readout")
 public class GamepadStateReadout extends LinearOpMode {
+    /*
+    * This code is for testing the gamePads to see if
+    * all the buttons still work
+    * the m1 and m2 are mapped correctly
+    * there is any joystick drift
+    * any other required testing
+    * only works with gamepad 1
+     */
+
 
     @Override
     public void runOpMode() throws InterruptedException {

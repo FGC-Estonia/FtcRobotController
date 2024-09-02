@@ -13,7 +13,10 @@ public class IMUtest extends LinearOpMode {
     private IMU imu;
 
     @Override
-    public void runOpMode() { // this code is for returning imu anges for testing purposes
+    public void runOpMode() {
+
+        // this code is for returning imu angles for testing and debugging purposes
+        // it only contains the barebones of what is necessary to use the IMU
 
         imu = hardwareMap.get(IMU.class, "imu");
 

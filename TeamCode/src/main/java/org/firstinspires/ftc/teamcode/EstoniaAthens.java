@@ -22,17 +22,16 @@ import org.firstinspires.ftc.teamcode.mainModules.VisionManager;
 
 @TeleOp(name = "Main code EstoniaAthens")
 // allows to display the code in the driver station, comment out to remove
-public class EstoniaAthens extends LinearOpMode { //file name is Main.java    extends the prebuilt LinearOpMode by rev to run
-
-    double[] positionData = {
-            0, //PoseX
-            0, //PoseY
-            0, //PoseZ
-            0, //updatedFrame
-    };
-
+public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.java    extends the prebuilt LinearOpMode by rev to run
     @Override
     public void runOpMode() {
+        //created a deafult value to avoid errors
+        double[] positionData = {
+                0, //PoseX
+                0, //PoseY
+                0, //PoseZ
+                0, //updatedFrame
+        };
         /*
          * map objects
          * objectName = new ClassName()

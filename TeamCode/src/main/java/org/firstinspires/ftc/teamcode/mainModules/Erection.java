@@ -12,8 +12,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Erection {
-    private Telemetry telemetry;
-    private HardwareMap hardwareMap;
+
+    private final Telemetry telemetry;
+    private final HardwareMap hardwareMap;
     private Servo leftServo;
     private Servo rightServo;
     private DcMotorEx frontElevatorEx;
@@ -94,10 +95,6 @@ public class Erection {
 
 
                 }
-
-
-                //telemetry.addData("front erector position", frontElevatorEx.getCurrentPosition());
-                //telemetry.addData("back erector position", backElevatorEx.getCurrentPosition());
             } catch (Exception e){
                 telemetry.addData("erectile  disfunction", true);
             }

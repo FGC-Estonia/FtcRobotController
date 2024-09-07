@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.mainModules.gimbal;  //place where the code is located
+package org.firstinspires.ftc.teamcode.archive.gimbal;  //place where the code is located
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import java.nio.charset.CharacterCodingException;
 
 public class Gimbal {
 

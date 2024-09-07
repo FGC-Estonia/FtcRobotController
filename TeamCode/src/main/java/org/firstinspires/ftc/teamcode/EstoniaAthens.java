@@ -1,13 +1,31 @@
 package org.firstinspires.ftc.teamcode;  //place where the code is located
 
-//     o
-//        o      ______/~/~/~/__           /((
-//        o  // __            ====__    /_((
-//        o  //  @))       ))))      ===/__((
-//       ))           )))))))        __((
-//       \\     \)     ))))    __===\ _((
-//        \\_______________====      \_((
-//        \((
+/* Damn,
+
+There is a huge bug in our code:
+    ,__                   __
+    '~~****Nm_    _mZ*****~~
+            _8@mm@K_
+           W~@`  '@~W
+          ][][    ][][
+    gz    'W'W.  ,W`W`    es
+  ,Wf    gZ****MA****Ns    VW.
+ gA`   ,Wf     ][     VW.   'Ms
+Wf    ,@`      ][      '@.    VW
+M.    W`  _mm_ ][ _mm_  'W    ,A
+'W   ][  i@@@@i][i@@@@i  ][   W`
+ !b  @   !@@@@!][!@@@@!   @  d!
+  VWmP    ~**~ ][ ~**~    YmWf
+    ][         ][         ][
+  ,mW[         ][         ]Wm.
+ ,A` @  ,gms.  ][  ,gms.  @ 'M.
+ W`  Yi W@@@W  ][  W@@@W iP  'W
+d!   'W M@@@A  ][  M@@@A W`   !b
+@.    !b'V*f`  ][  'V*f`d!    ,@
+'Ms    VW.     ][     ,Wf    gA`
+  VW.   'Ms.   ][   ,gA`   ,Wf
+   'Ms    'V*mmWWmm*f`    gA`
+*/
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,21 +35,13 @@ import org.firstinspires.ftc.teamcode.mainModules.Erection;
 import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
 import org.firstinspires.ftc.teamcode.mainModules.Presses;
-import org.firstinspires.ftc.teamcode.mainModules.gimbal.Gimbal;
-import org.firstinspires.ftc.teamcode.mainModules.VisionManager;
 
-@TeleOp(name = "Main code EstoniaAthens")
+@TeleOp(name = "Main code Estonia Athens")
 // allows to display the code in the driver station, comment out to remove
+
 public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.java    extends the prebuilt LinearOpMode by rev to run
     @Override
     public void runOpMode() {
-        //created a deafult value to avoid errors
-        double[] positionData = {
-                0, //PoseX
-                0, //PoseY
-                0, //PoseZ
-                0, //updatedFrame
-        };
         /*
          * map objects
          * objectName = new ClassName()
@@ -40,21 +50,17 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
          *
          * if te external classes require initialisation do it here
          * eg:
-         * runMotor.initRunMotor(hardwareMap);
+         * RunMotor runMotor = new RunMotor(hardwareMap, telemetry);
          */
         
         ImuManager imuManager = new ImuManager(hardwareMap, telemetry);
         MoveRobot moveRobot = new MoveRobot(hardwareMap, telemetry, false);
-        VisionManager visionManager = new VisionManager(hardwareMap, telemetry);
-        Gimbal gimbal = new Gimbal(hardwareMap, telemetry);
         Erection erection = new Erection(hardwareMap, telemetry);
         Alignment alignment = new Alignment(hardwareMap, telemetry);
 
         Presses gamepad1_a = new Presses();
-        Presses gamepad2_dpad_up = new Presses();
 
         Presses.ToggleGroup gamepad2ToggleGroup = new Presses.ToggleGroup();
-
         Presses gamepad2_a = new Presses(gamepad2ToggleGroup);
         Presses gamepad2_b = new Presses(gamepad2ToggleGroup);
         Presses gamepad2_x = new Presses(gamepad2ToggleGroup);
@@ -70,7 +76,8 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         waitForStart(); //everything has been initialized, waiting for the start button
 
         while (opModeIsActive()) { // main loop
-            
+
+            double imuAngle = imuManager.getYawRadians();
             double drive = -gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
             if (gamepad1.left_bumper) {
@@ -78,49 +85,35 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
             } else {
                 strafe = gamepad1.left_stick_x;
             }
+            boolean fieldCentric = gamepad1_a.toggle(gamepad1.a);
 
-            boolean disableMovement = false;
+            boolean goToBottom = gamepad2_a.toggle(gamepad2.a);
+            boolean goTo80 = gamepad2_x.toggle(gamepad2.x);
+            boolean goTo100 = gamepad2_b.toggle(gamepad2.b);
+            boolean goTo120 = gamepad2_y.toggle(gamepad2.y);
+            double raiseManual = gamepad2.right_stick_y;
+
+            boolean releaseLeft = gamepad2.dpad_left;
+            boolean releaseRight = gamepad1.dpad_right;
 
             moveRobot.move(
-                    disableMovement,
-                    imuManager.getYawRadians(),
-                    drive, strafe, turn, // drive
-                    gamepad1_a.toggle(gamepad1.a)// toggle field centric
+                    imuAngle,
+                    drive, strafe, turn,
+                    fieldCentric
             );
 
             erection.raise(
-                    disableMovement,
-                    gamepad2.right_stick_y, //raise back
-                    gamepad2_a.toggle(gamepad2.a),
-                    gamepad2_x.toggle(gamepad2.x),
-                    gamepad2_b.toggle(gamepad2.b),
-                    gamepad2_y.toggle(gamepad2.y)
+                    raiseManual,
+                    goToBottom,
+                    goTo80,
+                    goTo100,
+                    goTo120
             );
 
             erection.release(
-                    disableMovement,
-                    gamepad2.dpad_left,
-                    gamepad2.dpad_right
+                    releaseLeft,
+                    releaseRight
             );
-
-            gimbal.moveGimbal(
-                    gamepad2_dpad_up.toggle(gamepad2.dpad_up),
-                    gamepad2.dpad_down,
-                    gamepad2.left_stick_x,
-                    gamepad2.left_stick_y,
-                    positionData[0],
-                    positionData[1],
-                    positionData[2],
-                    positionData[3]==1
-                    );
-
-
-            if (gamepad2.left_bumper) { gimbal.untuck(); }
-            if (gamepad2.left_trigger > 0.5) { gimbal.tuck(); }
-
-            gimbal.telemetryGimbal();
-
-            positionData = visionManager.returnPositionData(true);
 
             telemetry.update();
         }

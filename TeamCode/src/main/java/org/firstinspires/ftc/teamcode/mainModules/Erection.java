@@ -64,9 +64,9 @@ public class Erection {
     }
 
 
-    public void raise(boolean disable, double rightStick, boolean bottom, boolean height80, boolean height100, boolean height120) {
+    public void raise(double manualRaise, boolean bottom, boolean height80, boolean height100, boolean height120) {
 
-        if (!isInitError && !disable) {
+        if (!isInitError) {
             try {
                 telemetry.addData("Erection level:",(frontElevatorEx.getCurrentPosition()+backElevatorEx.getCurrentPosition())/2);
                 if (bottom && !(height80 || height100 || height120)) {
@@ -86,8 +86,8 @@ public class Erection {
                         frontElevatorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //runs using speed
                         backElevatorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-                        frontElevatorEx.setPower(-rightStick); // set max power
-                        backElevatorEx.setPower(-rightStick);
+                        frontElevatorEx.setPower(-manualRaise); // set max power
+                        backElevatorEx.setPower(-manualRaise);
                         /*
                         //if (!(height() >= 13000)) {  bit bad lähenemine
                         frontElevatorEx.setVelocity(rightStick * 1972.92);
@@ -98,11 +98,13 @@ public class Erection {
             } catch (Exception e){
                 telemetry.addData("erectile  disfunction", true);
             }
-        } else {
+        }
+        else {
             telemetry.addData("erectile initialization disfunction", true);
             tryMapMotors();
         }
     }
+
     public void tryMapMotors(){ //reduce failed attempted mappings = reduce useless computing
         attemptedInitCount++;
         if (attemptedInitCount < 100000){
@@ -110,10 +112,9 @@ public class Erection {
             mapMotors();
         }
     }
-    public void release(boolean disable, boolean left, boolean right) {
+    public void release(boolean left, boolean right) {
         try {
-
-            if (!disable && !isInitError) {
+            if (!isInitError) {
                 if (left) {
                     leftServo.setPosition(0);
                 } else {

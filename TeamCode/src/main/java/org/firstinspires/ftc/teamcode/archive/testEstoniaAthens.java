@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;  //place where the code is located
+package org.firstinspires.ftc.teamcode.archive;  //place where the code is located
 
 //     o
 //        o      ______/~/~/~/__           /((
@@ -9,6 +9,7 @@ package org.firstinspires.ftc.teamcode;  //place where the code is located
 //        \\_______________====      \_((
 //        \((
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,10 +18,12 @@ import org.firstinspires.ftc.teamcode.mainModules.Erection;
 import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
 import org.firstinspires.ftc.teamcode.mainModules.Presses;
+import org.firstinspires.ftc.teamcode.archive.gimbal.Gimbal;
 
-@TeleOp(name = "Main code Estonia Athens")
+@Disabled
+@TeleOp(name = "test")
 // allows to display the code in the driver station, comment out to remove
-public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.java    extends the prebuilt LinearOpMode by rev to run
+public class testEstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.java    extends the prebuilt LinearOpMode by rev to run
     @Override
     public void runOpMode() {
         //created a deafult value to avoid errors
@@ -43,12 +46,16 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         
         ImuManager imuManager = new ImuManager(hardwareMap, telemetry);
         MoveRobot moveRobot = new MoveRobot(hardwareMap, telemetry, false);
+        VisionManager visionManager = new VisionManager(hardwareMap, telemetry);
+        Gimbal gimbal = new Gimbal(hardwareMap, telemetry);
         Erection erection = new Erection(hardwareMap, telemetry);
         Alignment alignment = new Alignment(hardwareMap, telemetry);
 
         Presses gamepad1_a = new Presses();
+        Presses gamepad2_dpad_up = new Presses();
 
         Presses.ToggleGroup gamepad2ToggleGroup = new Presses.ToggleGroup();
+
         Presses gamepad2_a = new Presses(gamepad2ToggleGroup);
         Presses gamepad2_b = new Presses(gamepad2ToggleGroup);
         Presses gamepad2_x = new Presses(gamepad2ToggleGroup);
@@ -59,40 +66,49 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         waitForStart(); //everything has been initialized, waiting for the start button
 
         while (opModeIsActive()) { // main loop
-
-            double imuAngle = imuManager.getYawRadians();
+            
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
-            boolean fieldCentric = gamepad1_a.toggle(gamepad1.a);
 
-            boolean goToBottom = gamepad2_a.toggle(gamepad2.a);
-            boolean goTo80 = gamepad2_x.toggle(gamepad2.x);
-            boolean goTo100 = gamepad2_b.toggle(gamepad2.b);
-            boolean goTo120 = gamepad2_y.toggle(gamepad2.y);
-            double raiseManual = gamepad2.right_stick_y;
-
-            boolean releaseLeft = gamepad2.dpad_left;
-            boolean releaseRight = gamepad1.dpad_right;
 
             moveRobot.move(
-                    imuAngle,
-                    drive, strafe, turn,
-                    fieldCentric
+                    imuManager.getYawRadians(),
+                    drive, strafe, turn, // drive
+                    gamepad1_a.toggle(gamepad1.a)// toggle field centric
             );
 
             erection.raise(
-                    raiseManual,
-                    goToBottom,
-                    goTo80,
-                    goTo100,
-                    goTo120
+                    gamepad2.right_stick_y, //raise back
+                    gamepad2_a.toggle(gamepad2.a),
+                    gamepad2_x.toggle(gamepad2.x),
+                    gamepad2_b.toggle(gamepad2.b),
+                    gamepad2_y.toggle(gamepad2.y)
             );
 
             erection.release(
-                    releaseLeft,
-                    releaseRight
+                    gamepad2.dpad_left,
+                    gamepad2.dpad_right
             );
+
+            gimbal.moveGimbal(
+                    gamepad2_dpad_up.toggle(gamepad2.dpad_up),
+                    gamepad2.dpad_down,
+                    gamepad2.left_stick_x,
+                    gamepad2.left_stick_y,
+                    positionData[0],
+                    positionData[1],
+                    positionData[2],
+                    positionData[3]==1
+                    );
+
+
+            if (gamepad2.left_bumper) { gimbal.untuck(); }
+            if (gamepad2.left_trigger > 0.5) { gimbal.tuck(); }
+
+            gimbal.telemetryGimbal();
+
+            positionData = visionManager.returnPositionData(true);
 
             telemetry.update();
         }

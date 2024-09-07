@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.mainModules.gimbal;
+package org.firstinspires.ftc.teamcode.archive.gimbal;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 

@@ -60,6 +60,11 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         Presses gamepad2_x = new Presses(gamepad2ToggleGroup);
         Presses gamepad2_y = new Presses(gamepad2ToggleGroup);
 
+        double strafe;
+        double distance1 = 404.0;
+        double distance2 = 1167.0; // 3 calculated distances in mm from sensor to wall to align centre of drivebase to goal
+        double distance3 = 1945.0;
+        double target = distance1; // TODO make it a list selectable via the secondary controller maybe
 
         telemetry.update();
         waitForStart(); //everything has been initialized, waiting for the start button
@@ -67,8 +72,12 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         while (opModeIsActive()) { // main loop
             
             double drive = -gamepad1.left_stick_y;
-            double strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
+            if (gamepad1.left_bumper) {
+                strafe = alignment.alignTarget(target);
+            } else {
+                strafe = gamepad1.left_stick_x;
+            }
 
             boolean disableMovement = false;
 

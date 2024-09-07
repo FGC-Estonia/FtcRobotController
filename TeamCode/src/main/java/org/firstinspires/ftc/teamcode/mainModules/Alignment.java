@@ -25,11 +25,10 @@ public class Alignment {
     }
 
     private void init() {
-        MoveRobot moveRobot = new MoveRobot(hardwareMap, telemetry, false); // TODO check if this is viable and maybe the main moverobot can be ported to avoid errors(disable manual when in autodrive)
         distance = hardwareMap.get(DistanceSensor.class, "Distance");
     }
 
-    public void alignTarget(double target) {
+    public double alignTarget(double target) {
         double currentDistance = distance.getDistance(DistanceUnit.MM);
         double error = target - currentDistance;
         telemetry.addData("Error", error);
@@ -39,7 +38,9 @@ public class Alignment {
 
             // Ensure the speed is within an acceptable range (-1.0 to 1.0)
             speed = Math.max(-1.0, Math.min(1.0, speed));
-            // TODO add moverobot.move here if implemented
+            return speed;
+        } else {
+            return 0.0;
         }
     }
 }

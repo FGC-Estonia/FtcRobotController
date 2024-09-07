@@ -64,22 +64,24 @@ public class Erection {
     }
 
 
-    public void raise(double manualRaise, boolean bottom, boolean height80, boolean height100, boolean height120) {
+    public void raise(double manualRaise, boolean goIf, boolean bottom, boolean height80, boolean height100, boolean height120) {
 
         if (!isInitError) {
             try {
                 telemetry.addData("Erection level:",(frontElevatorEx.getCurrentPosition()+backElevatorEx.getCurrentPosition())/2);
-                if (bottom && !(height80 || height100 || height120)) {
-                    runToHeight(300);
-                }
-                if (height80 && !(bottom || height100 || height120)) {
-                    runToHeight(3200);
-                }
-                if (height100 && !(height80 || bottom || height120)) {
-                    runToHeight(4000);
-                }
-                if (height120 && !(height80 || height100 || bottom)) {
-                    runToHeight(4900);
+                if (goIf) {
+                    if (bottom) {
+                        runToHeight(300);
+                    }
+                    if (height80) {
+                        runToHeight(3200);
+                    }
+                    if (height100) {
+                        runToHeight(4000);
+                    }
+                    if (height120) {
+                        runToHeight(4900);
+                    }
                 }
                 if (!(height80 || height100 || bottom || height120)){
 
@@ -92,9 +94,8 @@ public class Erection {
                         //if (!(height() >= 13000)) {  bit bad lähenemine
                         frontElevatorEx.setVelocity(rightStick * 1972.92);
                         backElevatorEx.setVelocity(-rightStick * 1972.92);*/
-
-
                 }
+
             } catch (Exception e){
                 telemetry.addData("erectile  disfunction", true);
             }

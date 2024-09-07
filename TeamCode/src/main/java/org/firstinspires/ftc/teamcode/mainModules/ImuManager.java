@@ -43,6 +43,15 @@ public class ImuManager {
         initImu();
     }
 
+    public void resetImu(){
+        try {
+            imu.resetYaw();
+        } catch (Exception resetException){
+            telemetry.addLine(resetException.getMessage());
+        }
+
+    }
+
     public double getYawRadians(){
         double lastAngle = 0; //if the imu fails in the middle of the game, it will not flick to an angle because the imuManager returned 0, instead it will just stop working safely
 

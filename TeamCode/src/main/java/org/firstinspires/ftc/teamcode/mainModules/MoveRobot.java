@@ -19,6 +19,7 @@ public class MoveRobot {
 
     private final boolean useVelocity;
 
+    double lastWantedAngle = 0;
 
     public MoveRobot(HardwareMap hardwareMap, Telemetry telemetry, boolean useVelocity){
         //Pass required objects and a setting to the class
@@ -58,9 +59,18 @@ public class MoveRobot {
     }
 
     // the main function for moving the robot
-    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric) {
+    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric, boolean turnFieldCentric) {
         double x;
         double y;
+        double turnCompensation;
+
+        //the robot can constantly compensate for its angle or have it be freely turning
+        if (turnFieldCentric){
+            turnCompensation = lastWantedAngle - heading + turn;
+        } else {
+            lastWantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
+            turnCompensation = turn;
+        }
 
         // The operator can choose to move the robot relative to the field or to the robot
         if (fieldCentric) {
@@ -78,10 +88,10 @@ public class MoveRobot {
         }
 
         // Calculates raw power to motors
-        double leftFrontPowerRaw = x + y + turn;
-        double leftBackPowerRaw = x - y + turn;
-        double rightFrontPowerRaw = x - y - turn;
-        double rightBackPowerRaw = x + y - turn;
+        double leftFrontPowerRaw = x + y + turnCompensation;
+        double leftBackPowerRaw = x - y + turnCompensation;
+        double rightFrontPowerRaw = x - y - turnCompensation;
+        double rightBackPowerRaw = x + y - turnCompensation;
 
         // Calculate the maximum absolute power value for normalization
         double maxRawPower = Math.max(

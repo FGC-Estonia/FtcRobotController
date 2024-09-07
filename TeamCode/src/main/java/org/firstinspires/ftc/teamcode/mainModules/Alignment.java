@@ -25,7 +25,7 @@ public class Alignment {
     }
 
     private void init() {
-        distance = hardwareMap.get(DistanceSensor.class, "Distance");
+        distance = hardwareMap.get(DistanceSensor.class, "Distance"); // TODO add a red/blue toggle
     }
 
     public double alignTarget(double target) {

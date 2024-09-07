@@ -58,63 +58,100 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         Erection erection = new Erection(hardwareMap, telemetry);
         Alignment alignment = new Alignment(hardwareMap, telemetry);
 
-        Presses gamepad1_a = new Presses();
+        Presses gamepad1_left_trigger = new Presses();
+        Presses gamepad1_right_trigger = new Presses();
+        Presses gamepad1_left_bumper = new Presses();
+        Presses gamepad1_right_bumper = new Presses();
+        
+        Presses.ToggleGroup heightSelectToggleGroup = new Presses.ToggleGroup();
+        Presses gamepad2_cross = new Presses(heightSelectToggleGroup);
+        Presses gamepad2_triangle = new Presses(heightSelectToggleGroup);
+        Presses gamepad2_square = new Presses(heightSelectToggleGroup);
+        Presses gamepad2_circle = new Presses(heightSelectToggleGroup);
 
-        Presses.ToggleGroup gamepad2ToggleGroup = new Presses.ToggleGroup();
-        Presses gamepad2_a = new Presses(gamepad2ToggleGroup);
-        Presses gamepad2_b = new Presses(gamepad2ToggleGroup);
-        Presses gamepad2_x = new Presses(gamepad2ToggleGroup);
-        Presses gamepad2_y = new Presses(gamepad2ToggleGroup);
-
-        double strafe;
-        double distance1 = 404.0;
-        double distance2 = 1167.0; // 3 calculated distances in mm from sensor to wall to align centre of drivebase to goal
-        double distance3 = 1945.0;
-        double target = distance1; // TODO make it a list selectable via the secondary controller maybe
-
+        Presses.ToggleGroup robotSpeedToggleGroup = new Presses.ToggleGroup();
+        
+        
         telemetry.update();
         waitForStart(); //everything has been initialized, waiting for the start button
 
+        double distance1 = 404.0;
+        double distance2 = 1167.0; // 3 calculated distances in mm from sensor to wall to align centre of drivebase to goal
+        double distance3 = 1945.0;
+
+        double target = distance1;
+
         while (opModeIsActive()) { // main loop
 
-            double imuAngle = imuManager.getYawRadians();
-            double drive = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
-            if (gamepad1.left_bumper) {
-                strafe = alignment.alignTarget(target);
-            } else {
-                strafe = gamepad1.left_stick_x;
+            //gyro reset
+            {
+                if (gamepad1.right_bumper){
+                    imuManager.resetImu();
+                }
             }
-            boolean fieldCentric = gamepad1_a.toggle(gamepad1.a);
 
-            boolean goToBottom = gamepad2_a.toggle(gamepad2.a);
-            boolean goTo80 = gamepad2_x.toggle(gamepad2.x);
-            boolean goTo100 = gamepad2_b.toggle(gamepad2.b);
-            boolean goTo120 = gamepad2_y.toggle(gamepad2.y);
-            double raiseManual = gamepad2.right_stick_y;
+            //move robot
+            {
+                if (gamepad2.left_bumper) {
+                    if (gamepad2.cross){
+                        target = distance1;
+                    } else if (gamepad2.square){
+                        target = distance2;
+                    } else if (gamepad2.triangle){
+                        target = distance3;
+                    }
+                }
 
-            boolean releaseLeft = gamepad2.dpad_left;
-            boolean releaseRight = gamepad1.dpad_right;
+                double leftRight;
+                if (gamepad1.right_trigger < 0.5) { // if the right trigger is pressed-auto drive
+                    leftRight = alignment.alignTarget(target);
+                } else {
+                    leftRight = gamepad1.left_stick_x;
+                }
+                
+                double imuAngle = imuManager.getYawRadians();
+                double frontBack = -gamepad1.left_stick_y;
+                double turn = gamepad1.right_stick_x;
+                boolean fieldCentric = gamepad1_left_trigger.toggle(gamepad1.left_trigger < 0.5);
+                boolean turnFieldCentric = gamepad1_left_bumper.toggle(gamepad1.left_bumper);
 
-            moveRobot.move(
-                    imuAngle,
-                    drive, strafe, turn,
-                    fieldCentric
-            );
+                moveRobot.move(
+                        imuAngle,
+                        frontBack, leftRight, turn,
+                        fieldCentric, turnFieldCentric
+                );
+            } 
+            
+            // raise
+            {
+                double raiseManual = gamepad2.right_stick_y;
+                boolean goIf = !gamepad2.left_bumper;
+                boolean goToBottom = gamepad2_cross.toggle(gamepad2.cross);
+                boolean goTo80 = gamepad2_square.toggle(gamepad2.square);
+                boolean goTo100 = gamepad2_triangle.toggle(gamepad2.triangle);
+                boolean goTo120 = gamepad2_circle.toggle(gamepad2.circle);
 
-            erection.raise(
-                    raiseManual,
-                    goToBottom,
-                    goTo80,
-                    goTo100,
-                    goTo120
-            );
 
-            erection.release(
-                    releaseLeft,
-                    releaseRight
-            );
+                erection.raise(
+                        raiseManual,
+                        goIf,
+                        goToBottom,
+                        goTo80,
+                        goTo100,
+                        goTo120
+                );
+            }
+            
+            // release
+            {
+                boolean releaseLeft = gamepad2.dpad_left;
+                boolean releaseRight = gamepad1.dpad_right;
 
+                erection.release(
+                        releaseLeft,
+                        releaseRight
+                );
+            }
             telemetry.update();
         }
     }

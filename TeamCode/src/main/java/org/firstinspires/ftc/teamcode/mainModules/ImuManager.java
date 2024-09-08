@@ -17,9 +17,28 @@ public class ImuManager {
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
 
+    private final boolean protect;
+
     public void initImu(){
-        try {
-            // Initializing imu to avoid errors
+        if (protect) {
+            try {
+                // Initializing imu to avoid errors
+                imu = hardwareMap.get(IMU.class, "imu");
+
+                RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+
+                RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+                imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+                imu.resetYaw();
+                imuErrorBoolean = false;
+            } catch (Exception errorInitIMU) {
+                imuErrorBoolean = true;
+                telemetry.addData("IMU error", errorInitIMU.getMessage());
+            }
+        }else {
             imu = hardwareMap.get(IMU.class, "imu");
 
             RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -31,25 +50,27 @@ public class ImuManager {
 
             imu.resetYaw();
             imuErrorBoolean = false;
-        } catch (Exception errorInitIMU) {
-            imuErrorBoolean = true;
-            telemetry.addData("IMU error", errorInitIMU.getMessage());
         }
     }
 
-    public ImuManager(HardwareMap hardwareMap, Telemetry telemetry) {
+    public ImuManager(boolean protect, HardwareMap hardwareMap, Telemetry telemetry) {
+        this.protect = protect;
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         initImu();
     }
 
     public void resetImu(){
-        try {
-            imu.resetYaw();
-        } catch (Exception resetException){
-            telemetry.addLine(resetException.getMessage());
+        if (protect) {
+            try {
+                imu.resetYaw();
+            } catch (Exception resetException) {
+                telemetry.addLine(resetException.getMessage());
+            }
         }
-
+        else {
+            imu.resetYaw();
+        }
     }
 
     public double getYawRadians(){
@@ -60,13 +81,17 @@ public class ImuManager {
             initImu();
         }
 
-        try {
+        if (protect) {
+            try {
+                lastAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+                return lastAngle;
+            } catch (Exception errorIMU) {
+                telemetry.addData("IMU ERROR", errorIMU.getMessage());
+                return lastAngle;
+            }
+        }else {
             lastAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             return lastAngle;
-        } catch (Exception errorIMU){
-            telemetry.addData("IMU ERROR", errorIMU.getMessage());
-            return 0;
         }
-
     }
 }

@@ -16,7 +16,7 @@ public class Alignment {
     private double target = distance1; // TODO make it a list selectable via the secondary controller maybe
     private double tolerance = 10.0;
 
-    private double Kp = 0.05;
+    private double Kp = 0.0025;
 
     public Alignment(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -34,7 +34,7 @@ public class Alignment {
         telemetry.addData("Error", error);
 
         if (Math.abs(error) > tolerance) {
-            double speed = Kp * error; // Calculate proportional speed
+            double speed = -(Kp * error); // Calculate proportional speed
 
             // Ensure the speed is within an acceptable range (-1.0 to 1.0)
             speed = Math.max(-1.0, Math.min(1.0, speed));

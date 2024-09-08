@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
@@ -19,7 +17,6 @@ public class Erection {
     private Servo rightServo;
     private DcMotorEx frontElevatorEx;
     private DcMotorEx backElevatorEx;
-    private TouchSensor limit;
     private boolean isInitError = false;
     private int attemptedInitCount = 0;
 
@@ -28,8 +25,6 @@ public class Erection {
     private void mapMotors() {
         if (protect) {
             try {
-
-                limit = hardwareMap.get(TouchSensor.class, "Digital_Port_0_EH");
 
                 leftServo = hardwareMap.get(Servo.class, "Servo_Port_4_CH");
                 rightServo = hardwareMap.get(Servo.class, "Servo_Port_3_CH");
@@ -57,8 +52,6 @@ public class Erection {
             }
         }
         else {
-            limit = hardwareMap.get(TouchSensor.class, "Digital_Port_0_EH");
-
             leftServo = hardwareMap.get(Servo.class, "Servo_Port_4_CH");
             rightServo = hardwareMap.get(Servo.class, "Servo_Port_3_CH");
 

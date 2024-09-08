@@ -42,6 +42,7 @@ import org.firstinspires.ftc.teamcode.mainModules.Presses;
 public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.java    extends the prebuilt LinearOpMode by rev to run
     @Override
     public void runOpMode() {
+        boolean protect = false; // activate try/catch to protect the code
         /*
          * map objects
          * objectName = new ClassName()
@@ -53,10 +54,10 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
          * RunMotor runMotor = new RunMotor(hardwareMap, telemetry);
          */
         
-        ImuManager imuManager = new ImuManager(hardwareMap, telemetry);
-        MoveRobot moveRobot = new MoveRobot(hardwareMap, telemetry, false);
-        Erection erection = new Erection(hardwareMap, telemetry);
-        Alignment alignment = new Alignment(hardwareMap, telemetry);
+        ImuManager imuManager = new ImuManager(protect, hardwareMap, telemetry);
+        MoveRobot moveRobot = new MoveRobot(protect, hardwareMap, telemetry, false);
+        Erection erection = new Erection(protect, hardwareMap, telemetry);
+        Alignment alignment = new Alignment(protect, hardwareMap, telemetry);
 
         Presses gamepad1_left_trigger = new Presses();
         Presses gamepad1_right_trigger = new Presses();
@@ -68,9 +69,6 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         Presses gamepad2_triangle = new Presses(heightSelectToggleGroup);
         Presses gamepad2_square = new Presses(heightSelectToggleGroup);
         Presses gamepad2_circle = new Presses(heightSelectToggleGroup);
-
-        Presses.ToggleGroup robotSpeedToggleGroup = new Presses.ToggleGroup();
-        
         
         telemetry.update();
         waitForStart(); //everything has been initialized, waiting for the start button
@@ -145,7 +143,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
             // release
             {
                 boolean releaseLeft = gamepad2.dpad_left;
-                boolean releaseRight = gamepad1.dpad_right;
+                boolean releaseRight = gamepad2.dpad_right;
 
                 erection.release(
                         releaseLeft,

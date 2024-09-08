@@ -19,10 +19,14 @@ public class MoveRobot {
 
     private final boolean useVelocity;
 
+    private final boolean protect;
+
     double lastWantedAngle = 0;
 
-    public MoveRobot(HardwareMap hardwareMap, Telemetry telemetry, boolean useVelocity){
+    public MoveRobot(boolean protect, HardwareMap hardwareMap, Telemetry telemetry, boolean useVelocity){
+
         //Pass required objects and a setting to the class
+        this.protect = protect;
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         this.useVelocity = useVelocity;
@@ -75,12 +79,17 @@ public class MoveRobot {
         // The operator can choose to move the robot relative to the field or to the robot
         if (fieldCentric) {
             // we have had problems with the imu, this prevents the code from crashing during a game if something goes wrong
-            try {
+            if (protect) {
+                try {
+                    x = drive * Math.cos(heading) - strafe * Math.sin(heading);
+                    y = drive * Math.sin(heading) + strafe * Math.cos(heading);
+                } catch (Exception e) {
+                    x = drive;
+                    y = strafe;
+                }
+            } else {
                 x = drive * Math.cos(heading) - strafe * Math.sin(heading);
                 y = drive * Math.sin(heading) + strafe * Math.cos(heading);
-            } catch (Exception e) {
-                x = drive;
-                y = strafe;
             }
         } else {
             x = drive;

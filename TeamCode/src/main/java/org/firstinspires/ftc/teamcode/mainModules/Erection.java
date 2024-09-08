@@ -23,10 +23,40 @@ public class Erection {
     private boolean isInitError = false;
     private int attemptedInitCount = 0;
 
+    private final boolean protect;
 
     private void mapMotors() {
-        try {
+        if (protect) {
+            try {
 
+                limit = hardwareMap.get(TouchSensor.class, "Digital_Port_0_EH");
+
+                leftServo = hardwareMap.get(Servo.class, "Servo_Port_4_CH");
+                rightServo = hardwareMap.get(Servo.class, "Servo_Port_3_CH");
+
+                //map Dc motors with encoders, it is in a try, catch because if the expansion hub is not
+                //properly connected the robot will throw an error and prevent the code from running
+
+                frontElevatorEx = hardwareMap.get(DcMotorEx.class, "Motor_Port_1_EH");
+                backElevatorEx = hardwareMap.get(DcMotorEx.class, "Motor_Port_0_EH");
+
+                frontElevatorEx.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backElevatorEx.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                backElevatorEx.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                frontElevatorEx.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                backElevatorEx.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                frontElevatorEx.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+                backElevatorEx.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
+                isInitError = false;
+            } catch (Exception eInit) {
+                isInitError = true;
+            }
+        }
+        else {
             limit = hardwareMap.get(TouchSensor.class, "Digital_Port_0_EH");
 
             leftServo = hardwareMap.get(Servo.class, "Servo_Port_4_CH");
@@ -50,40 +80,39 @@ public class Erection {
             backElevatorEx.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
             isInitError = false;
-        } catch (Exception eInit) {
-            isInitError = true;
         }
     }
 
-    public Erection(HardwareMap hardwareMapPorted, Telemetry telemetryPorted) {
+    public Erection(boolean protect, HardwareMap hardwareMap, Telemetry telemetry) {
 
-            hardwareMap = hardwareMapPorted;
-            telemetry = telemetryPorted;
+        this.protect = protect;
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
 
-            mapMotors();
+        mapMotors();
     }
 
 
     public void raise(double manualRaise, boolean goIf, boolean bottom, boolean height80, boolean height100, boolean height120) {
-
-        if (!isInitError) {
-            try {
-                telemetry.addData("Erection level:",(frontElevatorEx.getCurrentPosition()+backElevatorEx.getCurrentPosition())/2);
-                if (goIf) {
-                    if (bottom) {
-                        runToHeight(300);
+        if (protect) {
+            if (!isInitError) {
+                try {
+                    telemetry.addData("Erection level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
+                    if (goIf) {
+                        if (bottom) {
+                            runToHeight(300);
+                        }
+                        if (height80) {
+                            runToHeight(3200);
+                        }
+                        if (height100) {
+                            runToHeight(4000);
+                        }
+                        if (height120) {
+                            runToHeight(4900);
+                        }
                     }
-                    if (height80) {
-                        runToHeight(3200);
-                    }
-                    if (height100) {
-                        runToHeight(4000);
-                    }
-                    if (height120) {
-                        runToHeight(4900);
-                    }
-                }
-                if (!(height80 || height100 || bottom || height120)){
+                    if (!(height80 || height100 || bottom || height120)) {
 
                         frontElevatorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //runs using speed
                         backElevatorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -94,15 +123,43 @@ public class Erection {
                         //if (!(height() >= 13000)) {  bit bad lähenemine
                         frontElevatorEx.setVelocity(rightStick * 1972.92);
                         backElevatorEx.setVelocity(-rightStick * 1972.92);*/
-                }
+                    }
 
-            } catch (Exception e){
-                telemetry.addData("erectile  disfunction", true);
+                } catch (Exception e) {
+                    telemetry.addData("erectile  disfunction", true);
+                }
+            } else {
+                telemetry.addData("erectile initialization disfunction", true);
+                tryMapMotors();
             }
-        }
-        else {
-            telemetry.addData("erectile initialization disfunction", true);
-            tryMapMotors();
+        } else {
+            telemetry.addData("Erection level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
+            if (goIf) {
+                if (bottom) {
+                    runToHeight(300);
+                }
+                if (height80) {
+                    runToHeight(3200);
+                }
+                if (height100) {
+                    runToHeight(4000);
+                }
+                if (height120) {
+                    runToHeight(4900);
+                }
+            }
+            if (!(height80 || height100 || bottom || height120)) {
+
+                frontElevatorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //runs using speed
+                backElevatorEx.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                frontElevatorEx.setPower(-manualRaise); // set max power
+                backElevatorEx.setPower(-manualRaise);
+                        /*
+                        //if (!(height() >= 13000)) {  bit bad lähenemine
+                        frontElevatorEx.setVelocity(rightStick * 1972.92);
+                        backElevatorEx.setVelocity(-rightStick * 1972.92);*/
+            }
         }
     }
 
@@ -114,24 +171,38 @@ public class Erection {
         }
     }
     public void release(boolean left, boolean right) {
-        try {
-            if (!isInitError) {
-                if (left) {
-                    leftServo.setPosition(0);
-                } else {
-                    leftServo.setPosition(0.5);
-                }
-                if (right) {
-                    rightServo.setPosition(1);
-                } else {
-                    rightServo.setPosition(0.5);
-                }
+        if (protect) {
+            try {
+                if (!isInitError) {
+                    if (left) {
+                        leftServo.setPosition(0);
+                    } else {
+                        leftServo.setPosition(0.5);
+                    }
+                    if (right) {
+                        rightServo.setPosition(1);
+                    } else {
+                        rightServo.setPosition(0.5);
+                    }
 
+                }
+            } catch (Exception e) {
+                telemetry.addData("erectile initialization disfunction", true);
+                telemetry.addData("error", e.toString());
+                tryMapMotors();
             }
-        } catch (Exception e){
-            telemetry.addData("erectile initialization disfunction", true);
-            telemetry.addData("error", e.toString());
-            tryMapMotors();
+        }
+        else {
+            if (left) {
+                leftServo.setPosition(0);
+            } else {
+                leftServo.setPosition(0.5);
+            }
+            if (right) {
+                rightServo.setPosition(1);
+            } else {
+                rightServo.setPosition(0.5);
+            }
         }
     }
 

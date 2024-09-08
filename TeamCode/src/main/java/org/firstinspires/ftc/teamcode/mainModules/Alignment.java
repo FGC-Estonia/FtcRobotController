@@ -18,7 +18,10 @@ public class Alignment {
 
     private double Kp = 0.0025;
 
-    public Alignment(HardwareMap hardwareMap, Telemetry telemetry) {
+    private final boolean protect;
+
+    public Alignment(boolean protect, HardwareMap hardwareMap, Telemetry telemetry) {
+        this.protect = protect;
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         init();

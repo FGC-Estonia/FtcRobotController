@@ -70,7 +70,7 @@ public class MoveRobot {
 
         //the robot can constantly compensate for its angle or have it be freely turning
         if (turnFieldCentric){
-            turnCompensation = lastWantedAngle - heading + turn;
+            turnCompensation = heading - lastWantedAngle + turn;
         } else {
             lastWantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
             turnCompensation = turn;

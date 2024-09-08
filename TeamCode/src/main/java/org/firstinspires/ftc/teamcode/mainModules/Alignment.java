@@ -16,7 +16,7 @@ public class Alignment {
     private double target = distance1; // TODO make it a list selectable via the secondary controller maybe
     private double tolerance = 10.0;
 
-    private double Kp = 0.0025;
+    private double Kp = 0.0019;
 
     private final boolean protect;
 

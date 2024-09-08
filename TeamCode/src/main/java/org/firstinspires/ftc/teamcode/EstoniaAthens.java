@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.mainModules.Alignment;
+import org.firstinspires.ftc.teamcode.mainModules.BallPusher;
 import org.firstinspires.ftc.teamcode.mainModules.Erection;
 import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
@@ -58,6 +59,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         MoveRobot moveRobot = new MoveRobot(protect, hardwareMap, telemetry, false);
         Erection erection = new Erection(protect, hardwareMap, telemetry);
         Alignment alignment = new Alignment(protect, hardwareMap, telemetry);
+        BallPusher ballPusher = new BallPusher(protect, hardwareMap, telemetry);
 
         Presses gamepad1_left_trigger = new Presses();
         Presses gamepad1_right_trigger = new Presses();
@@ -69,7 +71,10 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         Presses gamepad2_triangle = new Presses(heightSelectToggleGroup);
         Presses gamepad2_square = new Presses(heightSelectToggleGroup);
         Presses gamepad2_circle = new Presses(heightSelectToggleGroup);
-        
+
+        Presses gamepad2_dpad_left = new Presses();
+        Presses gamepad2_dpad_right = new Presses();
+
         telemetry.update();
         waitForStart(); //everything has been initialized, waiting for the start button
 
@@ -142,12 +147,23 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
             
             // release
             {
-                boolean releaseLeft = gamepad2.dpad_left;
-                boolean releaseRight = gamepad2.dpad_right;
+                boolean releaseLeft = gamepad2.left_trigger > 0.5;
+                boolean releaseRight = gamepad2.right_trigger > 0.5;
 
                 erection.release(
                         releaseLeft,
                         releaseRight
+                );
+            }
+
+            // pushing hands
+            {
+                boolean leftState = gamepad2_dpad_left.toggle(gamepad2.dpad_left);
+                boolean rightState = gamepad2_dpad_right.toggle(gamepad2.dpad_right);
+
+                ballPusher.moveHands(
+                        leftState,
+                        rightState
                 );
             }
             telemetry.update();

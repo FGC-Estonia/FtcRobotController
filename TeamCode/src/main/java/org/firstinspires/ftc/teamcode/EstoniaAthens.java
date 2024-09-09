@@ -54,7 +54,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
          * eg:
          * RunMotor runMotor = new RunMotor(hardwareMap, telemetry);
          */
-        
+
         ImuManager imuManager = new ImuManager(protect, hardwareMap, telemetry);
         MoveRobot moveRobot = new MoveRobot(protect, hardwareMap, telemetry, false);
         Erection erection = new Erection(protect, hardwareMap, telemetry);
@@ -65,7 +65,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         Presses gamepad1_right_trigger = new Presses();
         Presses gamepad1_left_bumper = new Presses();
         Presses gamepad1_right_bumper = new Presses();
-        
+
         Presses.ToggleGroup heightSelectToggleGroup = new Presses.ToggleGroup();
         Presses gamepad2_cross = new Presses(heightSelectToggleGroup);
         Presses gamepad2_triangle = new Presses(heightSelectToggleGroup);
@@ -88,85 +88,93 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
 
             //gyro reset
             {
-                if (gamepad1.right_bumper){
+                if (gamepad1.right_bumper) {
                     imuManager.resetImu();
                 }
             }
 
             //move robot
             {
+                // change desired distance
                 if (gamepad2.left_bumper) {
-                    if (gamepad2.cross){
+                    if (gamepad2.cross) {
                         target = distance1;
-                    } else if (gamepad2.square){
+                    } else if (gamepad2.square) {
                         target = distance2;
-                    } else if (gamepad2.triangle){
+                    } else if (gamepad2.triangle) {
                         target = distance3;
                     }
                 }
 
+                //position automatically when pressed
                 double leftRight;
-                if (gamepad1.right_trigger > 0.5) { // if the right trigger is pressed-auto drive
-                    leftRight = alignment.alignTarget(target);
-                } else {
-                    leftRight = gamepad1.left_stick_x;
+                boolean lockToBackWall = false;
+                {
+                    if (gamepad1.right_trigger > 0.5) { // if the right trigger is pressed-auto drive
+                        lockToBackWall = true;
+                        leftRight = alignment.alignTarget(target);
+                    } else {
+                        leftRight = gamepad1.left_stick_x;
+                    }
+
+
+                    double imuAngle = imuManager.getYawRadians();
+                    double frontBack = -gamepad1.left_stick_y;
+                    double turn = gamepad1.right_stick_x;
+                    boolean fieldCentric = gamepad1_left_trigger.toggle(gamepad1.left_trigger > 0.5);
+                    boolean turnFieldCentric = gamepad1_left_bumper.toggle(gamepad1.left_bumper);
+
+                    moveRobot.move(
+                            imuAngle,
+                            frontBack, leftRight, turn,
+                            fieldCentric, turnFieldCentric,
+                            lockToBackWall
+                    );
                 }
-                
-                double imuAngle = imuManager.getYawRadians();
-                double frontBack = -gamepad1.left_stick_y;
-                double turn = gamepad1.right_stick_x;
-                boolean fieldCentric = gamepad1_left_trigger.toggle(gamepad1.left_trigger > 0.5);
-                boolean turnFieldCentric = gamepad1_left_bumper.toggle(gamepad1.left_bumper);
-
-                moveRobot.move(
-                        imuAngle,
-                        frontBack, leftRight, turn,
-                        fieldCentric, turnFieldCentric
-                );
-            } 
-            
-            // raise
-            {
-                double raiseManual = gamepad2.right_stick_y;
-                boolean goIf = !gamepad2.left_bumper;
-                boolean goToBottom = gamepad2_cross.toggle(gamepad2.cross);
-                boolean goTo80 = gamepad2_square.toggle(gamepad2.square);
-                boolean goTo100 = gamepad2_triangle.toggle(gamepad2.triangle);
-                boolean goTo120 = gamepad2_circle.toggle(gamepad2.circle);
-
-
-                erection.raise(
-                        raiseManual,
-                        goIf,
-                        goToBottom,
-                        goTo80,
-                        goTo100,
-                        goTo120
-                );
             }
-            
-            // release
-            {
-                boolean releaseLeft = gamepad2.left_trigger > 0.5;
-                boolean releaseRight = gamepad2.right_trigger > 0.5;
+                // raise
+                {
+                    double raiseManual = gamepad2.right_stick_y;
+                    boolean goIf = !gamepad2.left_bumper;
+                    boolean goToBottom = gamepad2_cross.toggle(gamepad2.cross);
+                    boolean goTo80 = gamepad2_square.toggle(gamepad2.square);
+                    boolean goTo100 = gamepad2_triangle.toggle(gamepad2.triangle);
+                    boolean goTo120 = gamepad2_circle.toggle(gamepad2.circle);
 
-                erection.release(
-                        releaseLeft,
-                        releaseRight
-                );
-            }
 
-            // pushing hands
-            {
-                boolean leftState = gamepad2_dpad_left.toggle(gamepad2.dpad_left);
-                boolean rightState = gamepad2_dpad_right.toggle(gamepad2.dpad_right);
+                    erection.raise(
+                            raiseManual,
+                            goIf,
+                            goToBottom,
+                            goTo80,
+                            goTo100,
+                            goTo120
+                    );
+                }
 
-                ballPusher.moveHands(
-                        leftState,
-                        rightState
-                );
-            }
-            telemetry.update();
+                // release
+                {
+                    boolean releaseLeft = gamepad2.left_trigger > 0.5;
+                    boolean releaseRight = gamepad2.right_trigger > 0.5;
+
+                    erection.release(
+                            releaseLeft,
+                            releaseRight
+                    );
+                }
+
+                // pushing hands
+                {
+                    boolean leftState = gamepad2_dpad_left.toggle(gamepad2.dpad_left);
+                    boolean rightState = gamepad2_dpad_right.toggle(gamepad2.dpad_right);
+
+                    ballPusher.moveHands(
+                            leftState,
+                            rightState
+                    );
+                }
+                telemetry.update();
+
         }
     }
 }

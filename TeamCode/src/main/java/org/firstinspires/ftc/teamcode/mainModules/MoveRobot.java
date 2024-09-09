@@ -21,7 +21,7 @@ public class MoveRobot {
 
     private final boolean protect;
 
-    double lastWantedAngle = 0;
+    double wantedAngle = 0;
 
     public MoveRobot(boolean protect, HardwareMap hardwareMap, Telemetry telemetry, boolean useVelocity){
 
@@ -63,16 +63,23 @@ public class MoveRobot {
     }
 
     // the main function for moving the robot
-    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric, boolean turnFieldCentric) {
+    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric, boolean turnFieldCentric, boolean lockToBackWall) {
         double x;
         double y;
         double turnCompensation;
+        double turnMultiplier = 0.3;
+        SlowUpDate turnSlower = new SlowUpDate(20);
 
         //the robot can constantly compensate for its angle or have it be freely turning
-        if (turnFieldCentric){
-            turnCompensation = heading - lastWantedAngle + turn;
+        if (lockToBackWall && turnFieldCentric){
+            turnCompensation = -heading * turnMultiplier;
+        } else if (turnFieldCentric){
+            turnCompensation = heading - wantedAngle;
+            if (turnSlower.isTurn()){
+                wantedAngle += turn;
+            }
         } else {
-            lastWantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
+            wantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
             turnCompensation = turn;
         }
 
@@ -129,6 +136,25 @@ public class MoveRobot {
             leftBackDriveEx.setPower(leftBackPowerRaw / max);
             rightFrontDriveEx.setPower(rightFrontPowerRaw / max);
             rightBackDriveEx.setPower(rightBackPowerRaw / max);
+        }
+    }
+}
+class SlowUpDate {
+    // System.currentTimeMillis(); return milliseconds long so everything is in long to avoid type conflicts
+    private long msBetween = 20;
+    private long lastTime = System.currentTimeMillis();
+
+    SlowUpDate(long msBetween){
+        this.msBetween = msBetween;
+    }
+
+    boolean isTurn(){
+        long currentDiff = System.currentTimeMillis() - lastTime;
+        if (currentDiff > msBetween) {
+            lastTime = System.currentTimeMillis();
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -18,6 +18,7 @@ public class BallPusher {
         this.protect = protect;
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
+        mapMotors();
     }
 
     private void mapMotors(){

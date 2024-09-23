@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.mainModules.Alignment;
 import org.firstinspires.ftc.teamcode.mainModules.BallPusher;
-import org.firstinspires.ftc.teamcode.mainModules.Erection;
+import org.firstinspires.ftc.teamcode.mainModules.Raising;
 import org.firstinspires.ftc.teamcode.mainModules.ImuManager;
 import org.firstinspires.ftc.teamcode.mainModules.MoveRobot;
 import org.firstinspires.ftc.teamcode.mainModules.Presses;
@@ -57,7 +57,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
 
         ImuManager imuManager = new ImuManager(protect, hardwareMap, telemetry);
         MoveRobot moveRobot = new MoveRobot(protect, hardwareMap, telemetry, false);
-        Erection erection = new Erection(protect, hardwareMap, telemetry);
+        Raising raising = new Raising(protect, hardwareMap, telemetry);
         Alignment alignment = new Alignment(protect, hardwareMap, telemetry);
         BallPusher ballPusher = new BallPusher(protect, hardwareMap, telemetry);
 
@@ -142,7 +142,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
                     boolean goTo120 = gamepad2_circle.toggle(gamepad2.circle);
 
 
-                    erection.raise(
+                    raising.raise(
                             raiseManual,
                             goIf,
                             goToBottom,
@@ -157,7 +157,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
                     boolean releaseLeft = gamepad2.left_trigger > 0.5;
                     boolean releaseRight = gamepad2.right_trigger > 0.5;
 
-                    erection.release(
+                    raising.release(
                             releaseLeft,
                             releaseRight
                     );

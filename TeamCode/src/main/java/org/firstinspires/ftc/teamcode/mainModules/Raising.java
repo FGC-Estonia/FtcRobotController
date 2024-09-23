@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
-public class Erection {
+public class Raising {
 
     private final Telemetry telemetry;
     private final HardwareMap hardwareMap;
@@ -76,7 +76,7 @@ public class Erection {
         }
     }
 
-    public Erection(boolean protect, HardwareMap hardwareMap, Telemetry telemetry) {
+    public Raising(boolean protect, HardwareMap hardwareMap, Telemetry telemetry) {
 
         this.protect = protect;
         this.hardwareMap = hardwareMap;
@@ -90,7 +90,7 @@ public class Erection {
         if (protect) {
             if (!isInitError) {
                 try {
-                    telemetry.addData("Erection level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
+                    telemetry.addData("Raising level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
                     if (goIf) {
                         if (bottom) {
                             runToHeight(300);
@@ -119,14 +119,14 @@ public class Erection {
                     }
 
                 } catch (Exception e) {
-                    telemetry.addData("erectile  disfunction", true);
+                    telemetry.addData("raising  disfunction", true);
                 }
             } else {
-                telemetry.addData("erectile initialization disfunction", true);
+                telemetry.addData("raising initialization disfunction", true);
                 tryMapMotors();
             }
         } else {
-            telemetry.addData("Erection level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
+            telemetry.addData("Raising level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
             if (goIf) {
                 if (bottom) {
                     runToHeight(300);
@@ -180,7 +180,7 @@ public class Erection {
 
                 }
             } catch (Exception e) {
-                telemetry.addData("erectile initialization disfunction", true);
+                telemetry.addData("raising initialization disfunction", true);
                 telemetry.addData("error", e.toString());
                 tryMapMotors();
             }

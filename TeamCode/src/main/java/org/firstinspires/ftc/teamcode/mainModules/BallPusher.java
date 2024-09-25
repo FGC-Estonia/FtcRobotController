@@ -22,8 +22,8 @@ public class BallPusher {
     }
 
     private void mapMotors(){
-        leftPusher = hardwareMap.get(Servo.class, "Servo_Port_5_CH");
-        rightPusher = hardwareMap.get(Servo.class, "Servo_Port_5_CH");
+        leftPusher = hardwareMap.get(Servo.class, "Servo_Port_0_CH");
+        rightPusher = hardwareMap.get(Servo.class, "Servo_Port_1_CH");
     }
 
     public void moveHands(boolean leftState, boolean rightState){

@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class MoveRobot {
 
+
     //these need to be defined here because they are used in multiple methods
     private DcMotorEx leftFrontDriveEx = null;  //  Used to control the left front drive wheel
     private DcMotorEx rightFrontDriveEx = null;  //  Used to control the right front drive wheel
@@ -22,6 +23,8 @@ public class MoveRobot {
     private final boolean protect;
 
     double wantedAngle = 0;
+
+    double maxSpeed=1;
 
     public MoveRobot(boolean protect, HardwareMap hardwareMap, Telemetry telemetry, boolean useVelocity){
 
@@ -63,7 +66,23 @@ public class MoveRobot {
     }
 
     // the main function for moving the robot
-    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric, boolean turnFieldCentric, boolean lockToBackWall, double autoCompensation) {
+    public void move(double heading, double drive, double strafe, double turn,
+                     boolean fieldCentric, boolean turnFieldCentric,
+                     boolean lockToBackWall, double autoCompensation,
+                     boolean speed1, boolean speed2, boolean speed3,
+                     double maxRaisedVelocity
+    ) {
+        if (speed1){
+            maxSpeed=0.25;
+        }if (speed2){
+            maxSpeed=0.5;
+        }if (speed3){
+            maxSpeed=1;
+        }
+        maxSpeed = Math.min(maxRaisedVelocity, maxSpeed);
+
+
+
         double x;
         double y;
         double turnCompensation;
@@ -79,6 +98,8 @@ public class MoveRobot {
                 turnCompensation = heading - wantedAngle;
                 if (turnSlower.isTurn()) {
                     wantedAngle += turn;
+                    telemetry.addData("wanted angle", wantedAngle);
+                    telemetry.addData("turn", turn);
                 }
             } else {
                 wantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
@@ -127,7 +148,7 @@ public class MoveRobot {
                 Math.max(Math.abs(rightFrontPowerRaw), Math.abs(rightBackPowerRaw))
         );
         // if the power is not over 1, the code will divide by 1, which doesn't affect the end result
-        double max = Math.max(maxRawPower, 1.0);
+        double max = Math.max(maxRawPower, 1);
         double maxAngularVelocityRadians = 1972.92;
         double wheelSizeCorrection = 1.2039; // we use 2 different sizes of wheels. We double the wheels on each motor for better grip and there are only 4 of both sizes
 
@@ -138,16 +159,16 @@ public class MoveRobot {
             double rightFrontRawSpeed = (rightFrontPowerRaw / max * maxAngularVelocityRadians / wheelSizeCorrection);
             double rightBackRawSpeed = (rightBackPowerRaw / max * maxAngularVelocityRadians);
 
-            leftFrontDriveEx.setVelocity(leftFrontRawSpeed);
-            leftBackDriveEx.setVelocity(leftBackRawSpeed);
-            rightFrontDriveEx.setVelocity(rightFrontRawSpeed);
-            rightBackDriveEx.setVelocity(rightBackRawSpeed);
+            leftFrontDriveEx.setVelocity(leftFrontRawSpeed * maxSpeed);
+            leftBackDriveEx.setVelocity(leftBackRawSpeed * maxSpeed);
+            rightFrontDriveEx.setVelocity(rightFrontRawSpeed * maxSpeed);
+            rightBackDriveEx.setVelocity(rightBackRawSpeed * maxSpeed);
         } else {
             // Set motor power directly
-            leftFrontDriveEx.setPower(leftFrontPowerRaw / max);
-            leftBackDriveEx.setPower(leftBackPowerRaw / max);
-            rightFrontDriveEx.setPower(rightFrontPowerRaw / max);
-            rightBackDriveEx.setPower(rightBackPowerRaw / max);
+            leftFrontDriveEx.setPower(leftFrontPowerRaw / max * maxSpeed);
+            leftBackDriveEx.setPower(leftBackPowerRaw / max * maxSpeed);
+            rightFrontDriveEx.setPower(rightFrontPowerRaw / max * maxSpeed);
+            rightBackDriveEx.setPower(rightBackPowerRaw / max * maxSpeed);
         }
     }
 }

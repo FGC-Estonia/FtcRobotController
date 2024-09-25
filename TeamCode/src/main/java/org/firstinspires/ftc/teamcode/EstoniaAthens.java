@@ -72,8 +72,17 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         Presses gamepad2_square = new Presses(heightSelectToggleGroup);
         Presses gamepad2_circle = new Presses(heightSelectToggleGroup);
 
+        Presses.ToggleGroup speedSelectToggle = new Presses.ToggleGroup();
+        Presses gamepad1_square = new Presses(speedSelectToggle);
+        Presses gamepad1_triangle = new Presses(speedSelectToggle);
+        Presses gamepad1_circle = new Presses(speedSelectToggle);
+        Presses gamepad1_cross = new Presses(speedSelectToggle);
+        gamepad1_triangle.setToggleTrue();//set deafult value
+
         Presses gamepad2_dpad_left = new Presses();
         Presses gamepad2_dpad_right = new Presses();
+
+        double maxRaisedVelocity;
 
         telemetry.update();
         waitForStart(); //everything has been initialized, waiting for the start button
@@ -85,6 +94,27 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
         double target = distance1;
 
         while (opModeIsActive()) { // main loop
+
+            // raise
+            {
+                double raiseManual = gamepad2.right_stick_y;
+                boolean goIf = !gamepad2.left_bumper;
+                boolean goToBottom = gamepad2_cross.toggle(gamepad2.cross);
+                boolean goTo80 = gamepad2_square.toggle(gamepad2.square);
+                boolean goTo100 = gamepad2_triangle.toggle(gamepad2.triangle);
+                boolean goTo120 = gamepad2_circle.toggle(gamepad2.circle);
+
+
+                maxRaisedVelocity = raising.raise(
+                        raiseManual,
+                        goIf,
+                        goToBottom,
+                        goTo80,
+                        goTo100,
+                        goTo120
+                );
+            }
+
 
             //gyro reset
             {
@@ -122,33 +152,20 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
                     boolean fieldCentric = gamepad1_left_trigger.toggle(gamepad1.left_trigger > 0.5);
                     boolean turnFieldCentric = gamepad1_left_bumper.toggle(gamepad1.left_bumper);
 
+                    boolean speed1 = gamepad1_cross.toggle(gamepad1.cross);
+                    boolean speed2 = gamepad1_square.toggle(gamepad1.square);
+                    boolean speed3 = gamepad1_triangle.toggle(gamepad1.triangle);
+
                     moveRobot.move(
                             imuAngle,
                             frontBack, leftRight, turn,
                             fieldCentric, turnFieldCentric,
-                            lockToBackWall, autoCompensation
+                            lockToBackWall, autoCompensation,
+                            speed1, speed2, speed3,
+                            maxRaisedVelocity
                     );
                 }
             }
-                // raise
-                {
-                    double raiseManual = gamepad2.right_stick_y;
-                    boolean goIf = !gamepad2.left_bumper;
-                    boolean goToBottom = gamepad2_cross.toggle(gamepad2.cross);
-                    boolean goTo80 = gamepad2_square.toggle(gamepad2.square);
-                    boolean goTo100 = gamepad2_triangle.toggle(gamepad2.triangle);
-                    boolean goTo120 = gamepad2_circle.toggle(gamepad2.circle);
-
-
-                    raising.raise(
-                            raiseManual,
-                            goIf,
-                            goToBottom,
-                            goTo80,
-                            goTo100,
-                            goTo120
-                    );
-                }
 
                 // release
                 {

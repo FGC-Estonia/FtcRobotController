@@ -86,7 +86,7 @@ public class Raising {
     }
 
 
-    public void raise(double manualRaise, boolean goIf, boolean bottom, boolean height80, boolean height100, boolean height120) {
+    public double raise(double manualRaise, boolean goIf, boolean bottom, boolean height80, boolean height100, boolean height120) {
         if (protect) {
             if (!isInitError) {
                 try {
@@ -153,6 +153,12 @@ public class Raising {
                         frontElevatorEx.setVelocity(rightStick * 1972.92);
                         backElevatorEx.setVelocity(-rightStick * 1972.92);*/
             }
+        }
+        double currentHeight = frontElevatorEx.getCurrentPosition();
+        if (currentHeight > 3200){
+            return 1- currentHeight/4900*0.75;
+        } else{
+            return 1;
         }
     }
 

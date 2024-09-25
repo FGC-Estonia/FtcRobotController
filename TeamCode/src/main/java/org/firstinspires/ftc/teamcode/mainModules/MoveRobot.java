@@ -63,7 +63,7 @@ public class MoveRobot {
     }
 
     // the main function for moving the robot
-    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric, boolean turnFieldCentric, boolean lockToBackWall) {
+    public void move(double heading, double drive, double strafe, double turn, boolean fieldCentric, boolean turnFieldCentric, boolean lockToBackWall, double autoCompensation) {
         double x;
         double y;
         double turnCompensation;
@@ -71,31 +71,43 @@ public class MoveRobot {
         SlowUpDate turnSlower = new SlowUpDate(20);
 
         //the robot can constantly compensate for its angle or have it be freely turning
-        if (lockToBackWall && turnFieldCentric){
-            turnCompensation = -heading * turnMultiplier;
-        } else if (turnFieldCentric){
-            turnCompensation = heading - wantedAngle;
-            if (turnSlower.isTurn()){
-                wantedAngle += turn;
+        {
+            if (lockToBackWall && turnFieldCentric) {
+                //turn to 0°
+                turnCompensation = -heading * turnMultiplier;
+            } else if (turnFieldCentric) {
+                turnCompensation = heading - wantedAngle;
+                if (turnSlower.isTurn()) {
+                    wantedAngle += turn;
+                }
+            } else {
+                wantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
+                turnCompensation = turn;
             }
-        } else {
-            wantedAngle = heading; // so if switched to the other the robot wont flick to a distant angle
-            turnCompensation = turn;
         }
-
         // The operator can choose to move the robot relative to the field or to the robot
         if (fieldCentric) {
             // we have had problems with the imu, this prevents the code from crashing during a game if something goes wrong
             if (protect) {
                 try {
-                    x = drive * Math.cos(heading) - strafe * Math.sin(heading);
+                    if (lockToBackWall){
+                        x = autoCompensation;
+                    }
+                    else{
+                        x = drive * Math.cos(heading) - strafe * Math.sin(heading);
+                    }
                     y = drive * Math.sin(heading) + strafe * Math.cos(heading);
                 } catch (Exception e) {
                     x = drive;
                     y = strafe;
                 }
             } else {
-                x = drive * Math.cos(heading) - strafe * Math.sin(heading);
+                if (lockToBackWall){
+                    x = autoCompensation;
+                }
+                else{
+                    x = drive * Math.cos(heading) - strafe * Math.sin(heading);
+                }
                 y = drive * Math.sin(heading) + strafe * Math.cos(heading);
             }
         } else {

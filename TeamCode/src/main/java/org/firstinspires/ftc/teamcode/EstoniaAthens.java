@@ -107,17 +107,15 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
                 }
 
                 //position automatically when pressed
-                double leftRight;
+                double autoCompensation = 0;
                 boolean lockToBackWall = false;
                 {
                     if (gamepad1.right_trigger > 0.5) { // if the right trigger is pressed-auto drive
                         lockToBackWall = true;
-                        leftRight = alignment.alignTarget(target);
-                    } else {
-                        leftRight = gamepad1.left_stick_x;
+                        autoCompensation = alignment.alignTarget(target);
                     }
 
-
+                    double leftRight = gamepad1.left_stick_x;
                     double imuAngle = imuManager.getYawRadians();
                     double frontBack = -gamepad1.left_stick_y;
                     double turn = gamepad1.right_stick_x;
@@ -128,7 +126,7 @@ public class EstoniaAthens extends LinearOpMode { //file name is EstoniaAthens.j
                             imuAngle,
                             frontBack, leftRight, turn,
                             fieldCentric, turnFieldCentric,
-                            lockToBackWall
+                            lockToBackWall, autoCompensation
                     );
                 }
             }

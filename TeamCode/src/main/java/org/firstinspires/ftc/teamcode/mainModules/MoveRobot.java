@@ -157,7 +157,7 @@ public class MoveRobot {
             double leftFrontRawSpeed = (leftFrontPowerRaw / max * maxAngularVelocityRadians);
             double leftBackRawSpeed = (leftBackPowerRaw / max * maxAngularVelocityRadians / wheelSizeCorrection);
             double rightFrontRawSpeed = (rightFrontPowerRaw / max * maxAngularVelocityRadians / wheelSizeCorrection);
-            double rightBackRawSpeed = (rightBackPowerRaw / max * maxAngularVelocityRadians);
+            double rightBackRawSpeed = (rightBackPowerRaw / max * maxAngularVelocityRadians);   
 
             leftFrontDriveEx.setVelocity(leftFrontRawSpeed * maxSpeed);
             leftBackDriveEx.setVelocity(leftBackRawSpeed * maxSpeed);

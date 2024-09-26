@@ -90,7 +90,6 @@ public class Raising {
         if (protect) {
             if (!isInitError) {
                 try {
-                    telemetry.addData("Raising level:", (frontElevatorEx.getCurrentPosition() + backElevatorEx.getCurrentPosition()) / 2);
                     if (goIf) {
                         if (bottom) {
                             runToHeight(300);

@@ -93,7 +93,7 @@ public class MoveRobot {
         {
             if (lockToBackWall && turnFieldCentric) {
                 //turn to 0°
-                turnCompensation = -heading * turnMultiplier;
+                turnCompensation = (heading-2* Math.PI) * turnMultiplier;
             } else if (turnFieldCentric) {
                 turnCompensation = heading - wantedAngle;
                 if (turnSlower.isTurn()) {

@@ -205,10 +205,10 @@ public class Raising {
     }
 
     public void runToHeight(int height) {
-        frontElevatorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION); //runs to position
-        backElevatorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frontElevatorEx.setTargetPosition(height);//1000(height mm)/(6mm(hex shaft diameter)*3,14)*28(ticks per rotation)
         backElevatorEx.setTargetPosition(height);
+        frontElevatorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION); //runs to position
+        backElevatorEx.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backElevatorEx.setPower(1);
         frontElevatorEx.setPower(1);
     }
